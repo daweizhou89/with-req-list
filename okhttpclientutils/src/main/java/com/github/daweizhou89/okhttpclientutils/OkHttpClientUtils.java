@@ -4,8 +4,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.google.gson.Gson;
-
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
@@ -15,7 +13,6 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
@@ -79,27 +76,17 @@ public class OkHttpClientUtils {
      * @param params
      * @return
      */
-    public static <T> Observable<T> get(@NonNull String url, @Nullable final RequestParams params, @NonNull final Class<T> clazz) {
+    public static <T> Observable<T> get(@NonNull final String url, @Nullable final RequestParams params, @NonNull final Class<T> clazz) {
         if (DebugLog.DEBUG) {
             DebugLog.d(OkHttpClientUtils.class, "get", MessageFormat.format("{0}?{1}", url, params == null ? null : params.toString()));
         }
-        if (params != null) {
-            url = getUrlWithQuery(url, params.toString());
-        }
-        final Request request = createGetRequest(url);
-
+        final Request request = createGetRequest(url, params);
         return createObservable(request)
                 .observeOn(Schedulers.io())
                 .map(new Function<String, T>() {
                     @Override
                     public T apply(String response) {
-                        T value = null;
-                        try {
-                            value = new Gson().fromJson(response, clazz);
-                        } catch (Exception e) {
-                            DebugLog.e(OkHttpClientUtils.class, "get", e);
-                            throw Exceptions.propagate(e);
-                        }
+                        T value = GsonUtils.parse(response, clazz);
                         return value;
                     }
                 });
@@ -112,27 +99,17 @@ public class OkHttpClientUtils {
      * @param params
      * @return
      */
-    public static <T> Observable<T> get(@NonNull String url, @Nullable final RequestParams params, @NonNull final Type type) {
+    public static <T> Observable<T> get(@NonNull final String url, @Nullable final RequestParams params, @NonNull final Type type) {
         if (DebugLog.DEBUG) {
             DebugLog.d(OkHttpClientUtils.class, "get(Type)", MessageFormat.format("{0}?{1}", url, params == null ? null : params.toString()));
         }
-        if (params != null) {
-            url = getUrlWithQuery(url, params.toString());
-        }
-        final Request request = createGetRequest(url);
-
+        final Request request = createGetRequest(url, params);
         return createObservable(request)
                 .observeOn(Schedulers.io())
                 .map(new Function<String, T>() {
                     @Override
                     public T apply(String response) {
-                        T value = null;
-                        try {
-                            value = new Gson().fromJson(response, type);
-                        } catch (Exception e) {
-                            DebugLog.e(OkHttpClientUtils.class, "getJsonObject", e);
-                            throw Exceptions.propagate(e);
-                        }
+                        T value = GsonUtils.parse(response, type);
                         return value;
                     }
                 });
@@ -146,15 +123,11 @@ public class OkHttpClientUtils {
      * @return
      * @throws IOException
      */
-    public static Observable<String> get(@NonNull String url, @Nullable final RequestParams params) {
+    public static Observable<String> get(@NonNull final String url, @Nullable final RequestParams params) {
         if (DebugLog.DEBUG) {
             DebugLog.d(OkHttpClientUtils.class, "get", MessageFormat.format("{0}?{1}", url, params == null ? null : params.toString()));
         }
-        if (params != null) {
-            url = getUrlWithQuery(url, params.toString());
-        }
-        final Request request = createGetRequest(url);
-
+        final Request request = createGetRequest(url, params);
         return createObservable(request);
     }
 
@@ -200,13 +173,7 @@ public class OkHttpClientUtils {
                 .map(new Function<String, T>() {
                     @Override
                     public T apply(String response) {
-                        T value = null;
-                        try {
-                            value = new Gson().fromJson(response, clazz);
-                        } catch (Exception e) {
-                            DebugLog.e(OkHttpClientUtils.class, "getJsonObject", e);
-                            throw Exceptions.propagate(e);
-                        }
+                        T value = GsonUtils.parse(response, clazz);
                         return value;
                     }
                 });
@@ -230,13 +197,7 @@ public class OkHttpClientUtils {
                 .map(new Function<String, T>() {
                     @Override
                     public T apply(String response) {
-                        T value = null;
-                        try {
-                            value = new Gson().fromJson(response, type);
-                        } catch (Exception e) {
-                            DebugLog.e(OkHttpClientUtils.class, "getJsonObject", e);
-                            throw Exceptions.propagate(e);
-                        }
+                        T value = GsonUtils.parse(response, type);
                         return value;
                     }
                 });
@@ -261,13 +222,7 @@ public class OkHttpClientUtils {
                 .map(new Function<String, T>() {
                     @Override
                     public T apply(String response) {
-                        T value = null;
-                        try {
-                            value = new Gson().fromJson(response, clazz);
-                        } catch (Exception e) {
-                            DebugLog.e(OkHttpClientUtils.class, "getJsonObject", e);
-                            throw Exceptions.propagate(e);
-                        }
+                        T value = GsonUtils.parse(response, clazz);
                         return value;
                     }
                 });
@@ -292,13 +247,7 @@ public class OkHttpClientUtils {
                 .map(new Function<String, T>() {
                     @Override
                     public T apply(String response) {
-                        T value = null;
-                        try {
-                            value = new Gson().fromJson(response, type);
-                        } catch (Exception e) {
-                            DebugLog.e(OkHttpClientUtils.class, "getJsonObject", e);
-                            throw Exceptions.propagate(e);
-                        }
+                        T value = GsonUtils.parse(response, type);
                         return value;
                     }
                 });
@@ -352,12 +301,16 @@ public class OkHttpClientUtils {
         return builder.build();
     }
 
-    private static Request createGetRequest(String url) {
+    private static Request createGetRequest(String url, final RequestParams params) {
+        String targetUrl = url;
+        if (params != null) {
+            targetUrl = getUrlWithQuery(url, params.toString());
+        }
         final Request.Builder builder = new Request.Builder();
         if (!TextUtils.isEmpty(sUserAgent)) {
             builder.addHeader("User-Agent", sUserAgent);
         }
-        builder.url(url);
+        builder.url(targetUrl);
         return builder.build();
     }
 
