@@ -105,12 +105,6 @@ public class ListManagerViewHolder {
         mSwipeRefreshListLayout.onRefreshComplete();
     }
 
-    protected final void setEmptyTipsText(String emptyTipsText) {
-        if (mLoadTipsView != null) {
-            mLoadTipsView.setEmptyText(emptyTipsText);
-        }
-    }
-
     protected final void setLoadTips(int tips) {
         if (mLoadTipsView != null) {
             mLoadTipsView.setTips(tips);

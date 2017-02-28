@@ -2,9 +2,11 @@ package com.github.daweizhou89.reqlist.manager;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.github.daweizhou89.reqlist.adapter.AbstractListAdapter;
 import com.github.daweizhou89.reqlist.requester.CommonRequester;
+import com.github.daweizhou89.reqlist.view.ILoadTips;
 
 import java.util.List;
 
@@ -91,9 +93,7 @@ public class CommonListManager<AT extends Activity> extends AbstractListManager<
 
         boolean loadMoreEnable = true;
 
-        String emptyTipsText;
-
-        int loadedEmptyTips;
+        int tipsLoadedEmpty = ILoadTips.TIPS_NULL;
 
         int pageSize;
 
@@ -159,13 +159,14 @@ public class CommonListManager<AT extends Activity> extends AbstractListManager<
             return this;
         }
 
-        public Builder setEmptyTipsText(String emptyTipsText) {
-            this.emptyTipsText = emptyTipsText;
-            return this;
-        }
-
-        public Builder setLoadedEmptyTips(int loadedEmptyTips) {
-            this.loadedEmptyTips = loadedEmptyTips;
+        /***
+         * 设定一个新空类型代替 {@link com.github.daweizhou89.reqlist.view.ILoadTips#TIPS_LOADED_EMPTY}
+         * 用来不同的列表为空提示样式
+         * @param tipsLoadedEmpty
+         * @return
+         */
+        public Builder setTipsLoadedEmpty(int tipsLoadedEmpty) {
+            this.tipsLoadedEmpty = tipsLoadedEmpty;
             return this;
         }
 
@@ -179,12 +180,12 @@ public class CommonListManager<AT extends Activity> extends AbstractListManager<
 
             listManager.mItemType = itemType;
             listManager.mItemTag = itemTag;
-            listManager.setEmptyTipsText(emptyTipsText);
-            listManager.setLoadedEmptyTips(loadedEmptyTips);
-            if (listManagerViewHolder == null) {
-                listManagerViewHolder = new ListManagerViewHolder(listManager);
+            if (tipsLoadedEmpty != ILoadTips.TIPS_NULL) {
+                listManager.setTipsLoadedEmpty(tipsLoadedEmpty);
             }
-            listManager.setListManagerViewHolder(listManagerViewHolder);
+            if (listManagerViewHolder != null) {
+                listManager.setListManagerViewHolder(listManagerViewHolder);
+            }
             CommonRequester.Builder requesterBuilder = new CommonRequester.Builder(listManager)
                     .setUrl(url)
                     .setCacheKey(cacheKey)

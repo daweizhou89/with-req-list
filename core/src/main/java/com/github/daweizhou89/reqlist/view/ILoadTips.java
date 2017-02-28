@@ -5,27 +5,27 @@ package com.github.daweizhou89.reqlist.view;
  */
 public interface ILoadTips {
 
-    int TIPS_NULL = -1;
+    int TIPS_NULL = 0;
     /***
      * 加载中
      */
-    int TIPS_LOADING = 0;
+    int TIPS_LOADING = 1;
     /***
      * 加载失败
      */
-    int TIPS_LOADED_FAIL = 1;
+    int TIPS_LOADED_FAIL = 2;
     /***
      * 加载为空
      */
-    int TIPS_LOADED_EMPTY = 2;
+    int TIPS_LOADED_EMPTY = 3;
     /***
      * 加载成功
      */
-    int TIPS_LOADED_OK = 3;
+    int TIPS_LOADED_OK = 4;
     /***
      * 没有网络
      */
-    int TIPS_LOADED_NO_NETWORK = 4;
+    int TIPS_LOADED_NO_NETWORK = 5;
 
     void setTips(int tips);
 

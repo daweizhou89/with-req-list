@@ -124,9 +124,7 @@ public abstract class AbstractListManager<AT extends Activity> {
         }
     };
 
-    private int mLoadedEmptyTips = ILoadTips.TIPS_LOADED_EMPTY;
-
-    private String mEmptyTipsText;
+    private int mTipsLoadedEmpty = ILoadTips.TIPS_LOADED_EMPTY;
 
     public AbstractListManager(Context context) {
         mActivity = (AT) context;
@@ -262,8 +260,7 @@ public abstract class AbstractListManager<AT extends Activity> {
         //如果网络获取下来没有数据的话则对应提示
         if (this.isEmpty()) {
             if (!isRequesting()) {
-                mListManagerViewHolder.setEmptyTipsText(getEmptyTipsText());
-                mListManagerViewHolder.setLoadTips(getLoadedEmptyTips());
+                mListManagerViewHolder.setLoadTips(mTipsLoadedEmpty);
             }
         } else {
             mListManagerViewHolder.setLoadTips(ILoadTips.TIPS_LOADED_OK);
@@ -414,29 +411,11 @@ public abstract class AbstractListManager<AT extends Activity> {
     }
 
     /***
-     * 子类不覆盖，返回默认
-     *
-     * @return 内容为空的提示类型
+     * 设定一个新空类型代替 {@link com.github.daweizhou89.reqlist.view.ILoadTips#TIPS_LOADED_EMPTY}
+     * 用来不同的列表为空提示样式
      */
-    protected int getLoadedEmptyTips() {
-        return mLoadedEmptyTips;
-    }
-
-    /***
-     * 自定义的内容列表空提示
-     *
-     * @return
-     */
-    protected String getEmptyTipsText() {
-        return mEmptyTipsText;
-    }
-
-    public void setEmptyTipsText(String emptyTipsText) {
-        this.mEmptyTipsText = emptyTipsText;
-    }
-
-    public void setLoadedEmptyTips(int loadedEmptyTips) {
-        this.mLoadedEmptyTips = loadedEmptyTips;
+    public void setTipsLoadedEmpty(int tipsLoadedEmpty) {
+        this.mTipsLoadedEmpty = tipsLoadedEmpty;
     }
 
     /***

@@ -236,10 +236,13 @@ public final class CommonRequester extends AbstractRequester {
 
         public CommonRequester build() {
             CommonRequester requester = new CommonRequester(listManager);
-            requester.mCacheKey = cacheKey;
-            requester.mItemParser = itemParser;
+            if (cacheKey != null) {
+                requester.mCacheKey = cacheKey;
+            }
+            if (itemParser != null) {
+                requester.mItemParser = itemParser;
+            }
             requester.mPageSize = pageSize;
-            requester.mItemParser = itemParser;
             requester.mItemTag = listManager.getItemTag();
             requester.mItemType = listManager.getItemType();
             requester.mNeedLoginInfo = needLoginInfo;
