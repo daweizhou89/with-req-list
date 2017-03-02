@@ -246,6 +246,7 @@ public final class CommonRequester extends AbstractRequester {
             requester.mItemTag = listManager.getItemTag();
             requester.mItemType = listManager.getItemType();
             requester.mNeedLoginInfo = needLoginInfo;
+            requester.mLoadMoreEnable = loadMoreEnable;
             requester.mUrl = url;
             if (onBuildListImpl == null) {
                 onBuildListImpl = new DefaultOnBuildListImpl();
