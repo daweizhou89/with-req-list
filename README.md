@@ -23,7 +23,7 @@ xml中添加, 例如sample中的activity_list1.xml
 </com.github.daweizhou89.reqlist.view.ListContentView>
 ```
 
-## CommonListManager例子
+## HttpListController例子
 参考sample中List1Activity
 ```java
 public class List1Activity extends AppCompatActivity {
@@ -109,7 +109,7 @@ public class ResultListAdapter extends BaseListAdapter {
 }
 ```
 
-## 自定义ListManager例子
+## 自定义ListController例子
 参考sample中List2Activity
 ```java
 public class List2Activity extends AppCompatActivity {
