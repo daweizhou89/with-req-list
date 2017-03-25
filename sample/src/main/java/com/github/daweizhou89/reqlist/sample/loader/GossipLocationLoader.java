@@ -1,10 +1,11 @@
-package com.github.daweizhou89.reqlist.sample.requester;
+package com.github.daweizhou89.reqlist.sample.loader;
 
 import com.github.daweizhou89.okhttpclientutils.OkHttpClientUtils;
 import com.github.daweizhou89.reqlist.DebugLog;
-import com.github.daweizhou89.reqlist.manager.AbstractListManager;
+import com.github.daweizhou89.reqlist.controler.BaseListController;
+import com.github.daweizhou89.reqlist.loader.http.BaseHttpLoader;
+import com.github.daweizhou89.reqlist.loader.http.ResponseCallBack;
 import com.github.daweizhou89.reqlist.model.ListItem;
-import com.github.daweizhou89.reqlist.requester.AbstractRequester;
 import com.github.daweizhou89.reqlist.sample.ItemType;
 import com.github.daweizhou89.reqlist.sample.model.Gossip;
 import com.github.daweizhou89.reqlist.sample.model.Response;
@@ -18,14 +19,14 @@ import java.util.List;
  * Created by daweizhou89 on 2017/2/26.
  */
 
-public class GossipLocationRequester extends AbstractRequester<Result> {
+public class GossipLocationLoader extends BaseHttpLoader<Result> {
 
-    public GossipLocationRequester(AbstractListManager listManager) {
-        super(listManager);
+    public GossipLocationLoader(BaseListController listController) {
+        super(listController);
     }
 
     @Override
-    protected void onResponse(String url, String responseStr) {
+    public void onResponse(String url, String responseStr, boolean more) {
         Response response = null;
         try {
             response = new Gson().fromJson(responseStr, Response.class);
@@ -38,18 +39,8 @@ public class GossipLocationRequester extends AbstractRequester<Result> {
     }
 
     @Override
-    protected void onResponseMore(String url, String response) {
-        // TODO nothing
-    }
-
-    @Override
-    protected void onRequest(int pageNo, CallBack callback, Object... inputs) {
+    protected void onLoad(int pageNo, boolean more, ResponseCallBack callback, Object... inputs) {
         OkHttpClientUtils.get("http://sugg.us.search.yahoo.net/gossip-gl-location/?appid=weather&output=json&command=%E5%B9%BF", null, callback);
-    }
-
-    @Override
-    protected void onRequestMore(int morePageNo, MoreCallback callback, Object... inputs) {
-        // TODO nothing
     }
 
     @Override

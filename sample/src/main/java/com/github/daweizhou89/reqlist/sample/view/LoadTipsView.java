@@ -7,13 +7,13 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.github.daweizhou89.reqlist.view.ILoadTips;
+import com.github.daweizhou89.reqlist.view.ILoadView;
 
 /**
  * Created by zhoudawei on 2017/2/26.
  */
 
-public class LoadTipsView extends FrameLayout implements ILoadTips, View.OnClickListener {
+public class LoadTipsView extends FrameLayout implements ILoadView, View.OnClickListener {
 
     private OnReloadListener mOnReloadListener;
 
@@ -39,33 +39,28 @@ public class LoadTipsView extends FrameLayout implements ILoadTips, View.OnClick
     }
 
     @Override
-    public void setTips(int tips) {
+    public void setState(int tips) {
         switch (tips) {
-            case TIPS_LOADED_EMPTY:
+            case STATE_LOADED_EMPTY:
                 mTextView.setText(mEmptyText == null ? "No Data!" : mEmptyText);
                 setVisibility(View.VISIBLE);
                 break;
-            case TIPS_LOADED_FAIL:
+            case STATE_LOADED_FAIL:
                 mTextView.setText("Loading Failed!");
                 setVisibility(View.VISIBLE);
                 break;
-            case TIPS_LOADED_NO_NETWORK:
+            case STATE_LOADED_NO_NETWORK:
                 mTextView.setText("No Network!");
                 setVisibility(View.VISIBLE);
                 break;
-            case TIPS_LOADING:
+            case STATE_LOADING:
                 mTextView.setText("Loading!");
                 setVisibility(View.VISIBLE);
                 break;
-            case TIPS_LOADED_OK:
+            case STATE_LOADED_OK:
                 setVisibility(View.GONE);
                 break;
         }
-    }
-
-    @Override
-    public void setEmptyText(String emptyText) {
-        mEmptyText = emptyText;
     }
 
     @Override

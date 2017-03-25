@@ -5,8 +5,6 @@ package com.github.daweizhou89.reqlist.model;
  */
 public class ListItem {
 
-    public static final int TYPE_LOAD_MORE = Integer.MAX_VALUE;
-
     public static final int FLAG_NORMAL = -1;
     public static final int FLAG_FIRST = 0;
     public static final int FLAG_LAST = 1;
@@ -75,4 +73,19 @@ public class ListItem {
     public void setIndexOfType(int indexOfType) {
         this.mIndexOfType = indexOfType;
     }
+
+    public static int getFrag(int i, int rowCount) {
+        if (i == 0) {
+            return ListItem.FLAG_FIRST;
+        } else if (i == rowCount - 1) {
+            return ListItem.FLAG_LAST;
+        }
+        return ListItem.FLAG_NORMAL;
+    }
+
+    public interface Type {
+        int COMMON_ITEM = 1;
+        int LOAD_FOOTER = Integer.MAX_VALUE;
+    }
+
 }

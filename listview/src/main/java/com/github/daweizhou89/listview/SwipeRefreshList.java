@@ -10,17 +10,17 @@ import android.view.LayoutInflater;
 /**
  * Created by daweizhou89 on 16/3/18.
  */
-public class SwipeRefreshListLayout extends SwipeRefreshLayout implements SwipeRefreshLayout.OnRefreshListener {
+public class SwipeRefreshList extends SwipeRefreshLayout implements SwipeRefreshLayout.OnRefreshListener {
 
     protected RecyclerListView mRecyclerView;
 
     private OnListRefreshListener mOnListRefreshListener;
 
-    public SwipeRefreshListLayout(Context context) {
+    public SwipeRefreshList(Context context) {
         this(context, null);
     }
 
-    public SwipeRefreshListLayout(Context context, AttributeSet attrs) {
+    public SwipeRefreshList(Context context, AttributeSet attrs) {
         super(context, attrs);
         initViews();
     }

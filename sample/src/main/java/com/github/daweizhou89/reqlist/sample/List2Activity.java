@@ -4,8 +4,10 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.github.daweizhou89.reqlist.ReqListContext;
+import com.github.daweizhou89.reqlist.sample.adapter.ResultListAdapter;
+import com.github.daweizhou89.reqlist.sample.controller.GossipLocationListController;
 import com.github.daweizhou89.reqlist.sample.databinding.ActivityList2Binding;
-import com.github.daweizhou89.reqlist.sample.manager.GossipLocationManager;
 
 public class List2Activity extends AppCompatActivity {
 
@@ -14,11 +16,12 @@ public class List2Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ActivityList2Binding binding = DataBindingUtil.setContentView(this, R.layout.activity_list2);
 
-        GossipLocationManager listManager = new GossipLocationManager(this);
+        ReqListContext reqListContext = new ReqListContext.Builder(this, new ResultListAdapter(this)).build();
+        GossipLocationListController listManager = new GossipLocationListController(reqListContext);
         binding.listContentView
                 .getInitHelper()
                 .setListManager(listManager)
-                .setSwipeRefreshListViewId(R.id.content_list)
+                .setSwipeRefreshListId(R.id.content_list)
                 .init();
     }
 }

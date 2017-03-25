@@ -1,4 +1,4 @@
-package com.github.daweizhou89.reqlist;
+package com.github.daweizhou89.reqlist.interfaces;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 /**
  * Created by daweizhou89 on 2017/2/18.
  */
-public interface IDataCacheManager {
+public interface IMemoryCacheManager {
 
     String get(@NonNull String key);
 

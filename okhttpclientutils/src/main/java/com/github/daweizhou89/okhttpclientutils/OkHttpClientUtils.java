@@ -326,8 +326,10 @@ public class OkHttpClientUtils {
                     response = sOkHttpClient.newCall(request).execute();
                     checkResponseSuccessful(response);
                     final String bodyString = response.body().string();
-                    emitter.onNext(bodyString != null ? bodyString : "");
-                    emitter.onComplete();
+                    if (!emitter.isDisposed()) {
+                        emitter.onNext(bodyString != null ? bodyString : "");
+                        emitter.onComplete();
+                    }
                 } catch (Exception e) {
                     DebugLog.e(OkHttpClientUtils.class, "createObservable", e);
                     emitter.onError(e);

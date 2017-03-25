@@ -6,10 +6,11 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.github.daweizhou89.okhttpclientutils.OkHttpClientUtils;
 import com.github.daweizhou89.reqlist.DebugLog;
-import com.github.daweizhou89.reqlist.manager.CommonListManager;
-import com.github.daweizhou89.reqlist.requester.AbstractRequester;
-import com.github.daweizhou89.reqlist.requester.CommonRequester;
-import com.github.daweizhou89.reqlist.sample.adapter.ResultAdapter;
+import com.github.daweizhou89.reqlist.ReqListContext;
+import com.github.daweizhou89.reqlist.controler.HttpListController;
+import com.github.daweizhou89.reqlist.loader.http.CommonHttpLoader;
+import com.github.daweizhou89.reqlist.loader.http.ResponseCallBack;
+import com.github.daweizhou89.reqlist.sample.adapter.ResultListAdapter;
 import com.github.daweizhou89.reqlist.sample.databinding.ActivityList1Binding;
 import com.github.daweizhou89.reqlist.sample.model.Gossip;
 import com.github.daweizhou89.reqlist.sample.model.Response;
@@ -24,29 +25,25 @@ public class List1Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityList1Binding binding = DataBindingUtil.setContentView(this, R.layout.activity_list1);
-        CommonListManager listManager = new CommonListManager.Builder(this)
+        ReqListContext reqListContext = new ReqListContext.Builder(this, new ResultListAdapter(this)).build();
+        HttpListController listController = new HttpListController.Builder(reqListContext)
                 .setUrl("http://sugg.us.search.yahoo.net/gossip-gl-location/?appid=weather&output=json&command=%E5%B9%BF")
-                .setItemParser(new CommonRequester.ItemParser() {
+                .setItemParser(new CommonHttpLoader.ItemParser() {
                     @Override
                     public List parseItems(String response) {
                         return null;
                     }
                 })
-                .setLoadMoreEnable(false)
+                .setLoadMore(false)
                 .setItemTag("list1")
                 .setItemType(ItemType.TYPE_RESULT)
-                .setOnRequestImpl(new CommonRequester.OnRequestImpl() {
+                .setOnLoadImpl(new CommonHttpLoader.OnLoadImpl() {
                     @Override
-                    public void onRequest(int pageNo, AbstractRequester.CallBack callback, Object... inputs) {
-                        OkHttpClientUtils.get(requester.getUrl(), null, callback);
-                    }
-
-                    @Override
-                    public void onRequestMore(int morePageNo, AbstractRequester.MoreCallback callback, Object... inputs) {
-                        // TODO nothing
+                    public void onLoad(int pageNo, boolean more, ResponseCallBack callback, Object... inputs) {
+                        OkHttpClientUtils.get(loader.getUrl(), null, callback);
                     }
                 })
-                .setItemParser(new CommonRequester.ItemParser() {
+                .setItemParser(new CommonHttpLoader.ItemParser() {
                     @Override
                     public List parseItems(String responseStr) {
                         Response response = null;
@@ -65,14 +62,11 @@ public class List1Activity extends AppCompatActivity {
                 })
                 .build();
 
-        ResultAdapter adapter = new ResultAdapter(this, listManager);
-        listManager.setAdapter(adapter);
-
         binding.listContentView
                 .getInitHelper()
-                .setListManager(listManager)
-                .setSwipeRefreshListViewId(R.id.content_list)
-                .setLoadTipsId(R.id.load_tips_view)
+                .setListManager(listController)
+                .setSwipeRefreshListId(R.id.content_list)
+                .setLoadViewId(R.id.load_tips_view)
                 .init();
     }
 }

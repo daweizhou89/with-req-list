@@ -1,10 +1,10 @@
-package com.github.daweizhou89.reqlist.requester;
+package com.github.daweizhou89.reqlist.loader.http;
 
 import android.support.annotation.NonNull;
 
 import com.github.daweizhou89.reqlist.DebugLog;
-import com.github.daweizhou89.reqlist.manager.AbstractListManager;
-import com.github.daweizhou89.reqlist.manager.CommonListManager;
+import com.github.daweizhou89.reqlist.controler.BaseListController;
+import com.github.daweizhou89.reqlist.controler.HttpListController;
 import com.github.daweizhou89.reqlist.model.ListItem;
 
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by daweizhou89 on 16/6/29.
  */
-public final class CommonRequester extends AbstractRequester {
+public final class CommonHttpLoader extends BaseHttpLoader {
 
     protected String mUrl;
 
@@ -26,11 +26,11 @@ public final class CommonRequester extends AbstractRequester {
 
     protected OnBuildListImpl mOnBuildListImpl;
 
-    protected OnRequestImpl mOnRequestImpl;
+    protected OnLoadImpl mOnLoadImpl;
 
     protected ItemParser mItemParser;
 
-    public CommonRequester(@NonNull AbstractListManager listManager) {
+    public CommonHttpLoader(@NonNull BaseListController listManager) {
         super(listManager, true);
     }
 
@@ -60,28 +60,19 @@ public final class CommonRequester extends AbstractRequester {
     }
 
     @Override
-    protected void onRequest(int pageNo, CallBack callback, Object... inputs) {
-        mOnRequestImpl.onRequest(pageNo, callback, inputs);
+    protected void onLoad(int pageNo, boolean more, ResponseCallBack callback, Object... inputs) {
+        mOnLoadImpl.onLoad(pageNo, more, callback, inputs);
     }
 
     @Override
-    protected void onRequestMore(int morePageNo, MoreCallback callBack, Object... inputs) {
-        mOnRequestImpl.onRequestMore(morePageNo, callBack, inputs);
-    }
-
-    @Override
-    protected void onResponse(String url, String response) {
+    public void onResponse(String key, String response, boolean more) {
         if (mItemParser != null) {
             List items = mItemParser.parseItems(response);
-            setData(items);
-        }
-    }
-
-    @Override
-    protected void onResponseMore(String url, String response) {
-        if (mItemParser != null) {
-            List items = mItemParser.parseItems(response);
-            appendData(items);
+            if (more) {
+                appendData(items);
+            } else {
+                setData(items);
+            }
         }
     }
 
@@ -92,9 +83,6 @@ public final class CommonRequester extends AbstractRequester {
 
     @Override
     public void appendData(List data) {
-        if (mItemParser != null) {
-            mItemParser.beforeAppendItems(data);
-        }
         super.appendData(data);
         if (data == null || data.isEmpty()) {
             return;
@@ -115,46 +103,40 @@ public final class CommonRequester extends AbstractRequester {
 
     public static abstract class OnBuildListImpl {
 
-        protected CommonRequester requester;
+        protected CommonHttpLoader loader;
 
         public abstract void onBuild(Object... inputs);
 
-        public CommonRequester getRequester() {
-            return requester;
+        public CommonHttpLoader getLoader() {
+            return loader;
         }
 
     }
 
-    public static abstract class OnRequestImpl {
+    public static abstract class OnLoadImpl {
 
-        protected CommonRequester requester;
+        protected CommonHttpLoader loader;
 
-        public abstract void onRequest(int pageNo, CallBack callBack, Object... inputs);
+        public abstract void onLoad(int pageNo, boolean more, ResponseCallBack callBack, Object... inputs);
 
-        public abstract void onRequestMore(int morePageNo, MoreCallback callback, Object... inputs);
-
-        public CommonRequester getRequester() {
-            return requester;
+        public CommonHttpLoader getLoader() {
+            return loader;
         }
     }
 
     public static abstract class ItemParser {
         public abstract List parseItems(String response);
-
-        public void beforeAppendItems(List datas) {
-            // TODO nothing
-        }
     }
 
     public static class DefaultOnBuildListImpl extends OnBuildListImpl {
 
         @Override
         public void onBuild(Object... inputs) {
-            List data = requester.getData();
-            buildDatas(data, 0, data == null ? 0 : data.size());
+            List data = loader.getData();
+            buildData(data, 0, data == null ? 0 : data.size());
         }
 
-        private void buildDatas(List datas, int startIndex, int length) {
+        private void buildData(List datas, int startIndex, int length) {
             if (datas == null || datas.isEmpty()) {
                 return;
             }
@@ -164,15 +146,15 @@ public final class CommonRequester extends AbstractRequester {
         }
 
         private void buildDataInternal(Object data, int index) {
-            final ListItem listItem = new ListItem(requester.getItemType(), data, index);
-            listItem.setTag(requester.getItemTag());
-            requester.addListItem(listItem);
+            final ListItem listItem = new ListItem(loader.getItemType(), data, index);
+            listItem.setTag(loader.getItemTag());
+            loader.addListItem(listItem);
         }
     }
 
     public static class Builder {
 
-        CommonListManager listManager;
+        HttpListController listManager;
 
         String url;
 
@@ -182,15 +164,15 @@ public final class CommonRequester extends AbstractRequester {
 
         OnBuildListImpl onBuildListImpl;
 
-        OnRequestImpl onRequestImpl;
+        OnLoadImpl onLoadImpl;
 
         ItemParser itemParser;
 
-        boolean loadMoreEnable = true;
+        boolean loadMore = true;
 
         int pageSize = DEFAULT_PAGE_SIZE;
 
-        public Builder(CommonListManager listManager) {
+        public Builder(HttpListController listManager) {
             this.listManager = listManager;
         }
 
@@ -214,8 +196,8 @@ public final class CommonRequester extends AbstractRequester {
             return this;
         }
 
-        public Builder setOnRequestImpl(OnRequestImpl onRequestImpl) {
-            this.onRequestImpl = onRequestImpl;
+        public Builder setOnLoadImpl(OnLoadImpl onLoadImpl) {
+            this.onLoadImpl = onLoadImpl;
             return this;
         }
 
@@ -224,8 +206,8 @@ public final class CommonRequester extends AbstractRequester {
             return this;
         }
 
-        public Builder setLoadMoreEnable(boolean loadMoreEnable) {
-            this.loadMoreEnable = loadMoreEnable;
+        public Builder setLoadMore(boolean loadMore) {
+            this.loadMore = loadMore;
             return this;
         }
 
@@ -234,8 +216,8 @@ public final class CommonRequester extends AbstractRequester {
             return this;
         }
 
-        public CommonRequester build() {
-            CommonRequester requester = new CommonRequester(listManager);
+        public CommonHttpLoader build() {
+            CommonHttpLoader requester = new CommonHttpLoader(listManager);
             if (cacheKey != null) {
                 requester.mCacheKey = cacheKey;
             }
@@ -246,15 +228,15 @@ public final class CommonRequester extends AbstractRequester {
             requester.mItemTag = listManager.getItemTag();
             requester.mItemType = listManager.getItemType();
             requester.mNeedLoginInfo = needLoginInfo;
-            requester.mLoadMoreEnable = loadMoreEnable;
+            requester.mLoadMore = loadMore;
             requester.mUrl = url;
             if (onBuildListImpl == null) {
                 onBuildListImpl = new DefaultOnBuildListImpl();
             }
-            onBuildListImpl.requester = requester;
+            onBuildListImpl.loader = requester;
             requester.mOnBuildListImpl = onBuildListImpl;
-            onRequestImpl.requester = requester;
-            requester.mOnRequestImpl = onRequestImpl;
+            onLoadImpl.loader = requester;
+            requester.mOnLoadImpl = onLoadImpl;
             requester.initCacheData();
             return requester;
         }

@@ -9,7 +9,7 @@ xml中添加, 例如sample中的activity_list1.xml
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.github.daweizhou89.listview.SwipeRefreshListLayout
+    <com.github.daweizhou89.listview.SwipeRefreshList
         android:id="@+id/content_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
@@ -32,29 +32,25 @@ public class List1Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityList1Binding binding = DataBindingUtil.setContentView(this, R.layout.activity_list1);
-        CommonListManager listManager = new CommonListManager.Builder(this)
+        ReqListContext reqListContext = new ReqListContext.Builder(this, new ResultListAdapter(this)).build();
+        HttpListController listController = new HttpListController.Builder(reqListContext)
                 .setUrl("http://sugg.us.search.yahoo.net/gossip-gl-location/?appid=weather&output=json&command=%E5%B9%BF")
-                .setItemParser(new CommonRequester.ItemParser() {
+                .setItemParser(new CommonHttpLoader.ItemParser() {
                     @Override
                     public List parseItems(String response) {
                         return null;
                     }
                 })
-                .setLoadMoreEnable(false)
+                .setLoadMore(false)
                 .setItemTag("list1")
                 .setItemType(ItemType.TYPE_RESULT)
-                .setOnRequestImpl(new CommonRequester.OnRequestImpl() {
+                .setOnLoadImpl(new CommonHttpLoader.OnLoadImpl() {
                     @Override
-                    public void onRequest(int pageNo, AbstractRequester.CallBack callback, Object... inputs) {
-                        OkHttpClientUtils.get(requester.getUrl(), null, callback);
-                    }
-
-                    @Override
-                    public void onRequestMore(int morePageNo, AbstractRequester.MoreCallback callback, Object... inputs) {
-                        // TODO nothing
+                    public void onLoad(int pageNo, boolean more, ResponseCallBack callback, Object... inputs) {
+                        OkHttpClientUtils.get(loader.getUrl(), null, callback);
                     }
                 })
-                .setItemParser(new CommonRequester.ItemParser() {
+                .setItemParser(new CommonHttpLoader.ItemParser() {
                     @Override
                     public List parseItems(String responseStr) {
                         Response response = null;
@@ -73,14 +69,11 @@ public class List1Activity extends AppCompatActivity {
                 })
                 .build();
 
-        ResultAdapter adapter = new ResultAdapter(this, listManager);
-        listManager.setAdapter(adapter);
-
         binding.listContentView
                 .getInitHelper()
-                .setListManager(listManager)
-                .setSwipeRefreshListViewId(R.id.content_list)
-                .setLoadTipsId(R.id.load_tips_view)
+                .setListManager(listController)
+                .setSwipeRefreshListId(R.id.content_list)
+                .setLoadViewId(R.id.load_tips_view)
                 .init();
     }
 }
@@ -88,10 +81,10 @@ public class List1Activity extends AppCompatActivity {
 
 ResultAdapter
 ```java
-public class ResultAdapter extends AbstractListAdapter {
+public class ResultListAdapter extends BaseListAdapter {
 
-    public ResultAdapter(Context context, AbstractListManager listManager) {
-        super(context, listManager);
+    public ResultListAdapter(Context context) {
+        super(context);
     }
 
     @Override
@@ -100,9 +93,9 @@ public class ResultAdapter extends AbstractListAdapter {
         return new ViewHolder(this, binding);
     }
 
-    public static class ViewHolder extends AbstractListViewHolder<ResultItemLayoutBinding> {
+    public static class ViewHolder extends ListBaseViewHolder<ResultItemLayoutBinding> {
 
-        public ViewHolder(AbstractListAdapter adapter, ResultItemLayoutBinding binding) {
+        public ViewHolder(BaseListAdapter adapter, ResultItemLayoutBinding binding) {
             super(adapter, binding);
         }
 
@@ -113,6 +106,7 @@ public class ResultAdapter extends AbstractListAdapter {
             binding.text.setText(listItem.getIndexOfType() + ". " + data.key);
         }
     }
+}
 ```
 
 ## 自定义ListManager例子
@@ -125,30 +119,26 @@ public class List2Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ActivityList2Binding binding = DataBindingUtil.setContentView(this, R.layout.activity_list2);
 
-        GossipLocationManager listManager = new GossipLocationManager(this);
+        ReqListContext reqListContext = new ReqListContext.Builder(this, new ResultListAdapter(this)).build();
+        GossipLocationListController listManager = new GossipLocationListController(reqListContext);
         binding.listContentView
                 .getInitHelper()
                 .setListManager(listManager)
-                .setSwipeRefreshListViewId(R.id.content_list)
+                .setSwipeRefreshListId(R.id.content_list)
                 .init();
     }
 }
 ```
 
-GossipLocationManager
+GossipLocationListController
 ```java
-public class GossipLocationManager extends AbstractListManager {
+public class GossipLocationListController extends BaseListController {
 
-    private GossipLocationRequester mGossipLocationRequester;
+    private GossipLocationLoader mGossipLocationRequester;
 
-    public GossipLocationManager(Context context) {
+    public GossipLocationListController(ReqListContext context) {
         super(context);
-        mGossipLocationRequester = new GossipLocationRequester(this);
-    }
-
-    @Override
-    protected AbstractListAdapter onCreateListAdapter() {
-        return new ResultAdapter(mActivity, this);
+        mGossipLocationRequester = new GossipLocationLoader(this);
     }
 
     @Override
@@ -157,27 +147,26 @@ public class GossipLocationManager extends AbstractListManager {
     }
 
     @Override
-    protected void onRequestData() {
-        mGossipLocationRequester.request();
-    }
-
-    @Override
-    protected void onRequestMoreAppend() {
-        // TODO nothing
+    protected void onRequestData(boolean more) {
+        if (!more) {
+            mGossipLocationRequester.load();
+        } else {
+            // TODO: it runs if loadMore of Loader is true;
+        }
     }
 }
 ```
 
-GossipLocationRequester
+GossipLocationLoader
 ```java
-public class GossipLocationRequester extends AbstractRequester<Result> {
+public class GossipLocationLoader extends BaseHttpLoader<Result> {
 
-    public GossipLocationRequester(AbstractListManager listManager) {
-        super(listManager);
+    public GossipLocationLoader(BaseListController listController) {
+        super(listController);
     }
 
     @Override
-    protected void onResponse(String url, String responseStr) {
+    public void onResponse(String url, String responseStr, boolean more) {
         Response response = null;
         try {
             response = new Gson().fromJson(responseStr, Response.class);
@@ -190,18 +179,8 @@ public class GossipLocationRequester extends AbstractRequester<Result> {
     }
 
     @Override
-    protected void onResponseMore(String url, String response) {
-        // TODO nothing
-    }
-
-    @Override
-    protected void onRequest(int pageNo, CallBack callback, Object... inputs) {
+    protected void onLoad(int pageNo, boolean more, ResponseCallBack callback, Object... inputs) {
         OkHttpClientUtils.get("http://sugg.us.search.yahoo.net/gossip-gl-location/?appid=weather&output=json&command=%E5%B9%BF", null, callback);
-    }
-
-    @Override
-    protected void onRequestMore(int morePageNo, MoreCallback callback, Object... inputs) {
-        // TODO nothing
     }
 
     @Override

@@ -3,12 +3,14 @@ package com.github.daweizhou89.reqlist;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.github.daweizhou89.reqlist.interfaces.IMemoryCacheManager;
+
 /**
  * Created by daweizhou89 on 2017/2/18.
  */
 public class ReqList {
 
-    private static IDataCacheManager sDataCacheManager = new EmptyDataCacheManager();
+    private static IMemoryCacheManager sDataCacheManager ;
 
     private static int[] sSwipeColorSchemeColors;
 
@@ -20,26 +22,24 @@ public class ReqList {
         return sSwipeColorSchemeColors;
     }
 
-    public static IDataCacheManager getDataCacheManager() {
+    public static IMemoryCacheManager getDataCacheManager() {
         return sDataCacheManager;
     }
 
-    static class EmptyDataCacheManager implements IDataCacheManager {
+    static class EmptyMemoryCacheManager implements IMemoryCacheManager {
         @Override
         public String get(@NonNull String key) {
             return null;
         }
 
         @Override
-        public void put(@NonNull String key, @Nullable String data) {
-
-        }
+        public void put(@NonNull String key, @Nullable String data) {}
     }
 
     public static class InitHelper {
 
         int[] swipeColorSchemeColors;
-        IDataCacheManager dataCacheManager;
+        IMemoryCacheManager dataCacheManager;
 
         private InitHelper() {
         }
@@ -49,7 +49,7 @@ public class ReqList {
             return this;
         }
 
-        public InitHelper setDataCacheManager(IDataCacheManager dataCacheManager) {
+        public InitHelper setDataCacheManager(IMemoryCacheManager dataCacheManager) {
             this.dataCacheManager = dataCacheManager;
             return this;
         }

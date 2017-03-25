@@ -83,34 +83,18 @@ public class RecyclerListView extends RecyclerView {
      * @param enable
      */
     public void setLoadMoreEnable(boolean enable) {
-        switch (mLoadMoreMode) {
-            case LOAD_MORE_MODE_ADVANCE:
-                setLoadMoreEnableAdvance(enable);
-                break;
-            case LOAD_MORE_MODE_NORMAL:
-                break;
-        }
+        setLoadMoreEnableAdvance(enable);
         mLoadMoreEnable = enable;
     }
 
     private void setLoadMoreEnableAdvance(boolean enable) {
         if (enable) {
             if (mLoadMoreScrollListener == null) {
-                mLoadMoreScrollListener = new RecyclerView.OnScrollListener() {
-
-                    @Override
-                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                        if (recyclerView.getAdapter() == null || recyclerView.getAdapter().getItemCount() == 0) {
-                            return;
-                        }
-                        final int totalItemCount = recyclerView.getAdapter().getItemCount();
-                        final int lastVisibleItem = mGridLayoutManager.findLastCompletelyVisibleItemPosition();
-                        // 预加载数据
-                        if (!mLoadingMore && totalItemCount <= (lastVisibleItem + mVisibleThreshold)) {
-                            performLoadMore();
-                        }
-                    }
-                };
+                if (mLoadMoreMode == LOAD_MORE_MODE_ADVANCE) {
+                    mLoadMoreScrollListener = new AdvanceOnScrollListener();
+                } else {
+                    mLoadMoreScrollListener = new NormalOnScrollListener();
+                }
                 addOnScrollListener(mLoadMoreScrollListener);
             }
         } else {
@@ -175,6 +159,40 @@ public class RecyclerListView extends RecyclerView {
      */
     public interface OnLoadMoreListener {
         void onLoadMore();
+    }
+
+    class AdvanceOnScrollListener extends RecyclerView.OnScrollListener {
+
+        @Override
+        public void onScrolled(android.support.v7.widget.RecyclerView recyclerView, int dx, int dy) {
+            if (recyclerView.getAdapter() == null || recyclerView.getAdapter().getItemCount() == 0) {
+                return;
+            }
+            final int totalItemCount = recyclerView.getAdapter().getItemCount();
+            final int lastVisibleItem = mGridLayoutManager.findLastCompletelyVisibleItemPosition();
+            // 预加载数据
+            if (!mLoadingMore && totalItemCount <= (lastVisibleItem + mVisibleThreshold)) {
+                performLoadMore();
+            }
+        }
+    }
+
+    class NormalOnScrollListener extends RecyclerView.OnScrollListener {
+
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            if (recyclerView.getAdapter() == null || recyclerView.getAdapter().getItemCount() == 0) {
+                return;
+            }
+            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                final int totalItemCount = recyclerView.getAdapter().getItemCount();
+                final int lastVisibleItem = mGridLayoutManager.findLastCompletelyVisibleItemPosition();
+                // 预加载数据
+                if (!mLoadingMore && totalItemCount <= (lastVisibleItem + mVisibleThreshold)) {
+                    performLoadMore();
+                }
+            }
+        }
     }
 
 }

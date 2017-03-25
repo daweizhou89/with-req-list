@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">core</string>
+    <string name="wrl_loading_more">正在运输中...</string>
+    <string name="wrl_no_more">敬请期待更多</string>
 </resources>
