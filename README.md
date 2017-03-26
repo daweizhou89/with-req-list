@@ -101,16 +101,22 @@ public class List1Activity extends AppCompatActivity {
 
 ResultAdapter
 ```java
-public class ResultListAdapter extends BaseListAdapter {
+public class ResultListAdapter extends BaseLoadFooterListAdapter {
 
     public ResultListAdapter(Context context) {
         super(context);
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolderII(ViewGroup parent, int viewType) {
         ResultItemLayoutBinding binding = DataBindingUtil.inflate(mLayoutInflater, R.layout.result_item_layout, parent, false);
         return new ViewHolder(this, binding);
+    }
+
+    @Override
+    protected BaseLoadFooterHolder onCreateLoadViewHolder(ViewGroup parent) {
+        LoadFooterItemLayoutBinding binding = DataBindingUtil.inflate(mLayoutInflater, R.layout.load_footer_item_layout, parent, false);
+        return new LoadFooterHolder(this, binding);
     }
 
     public static class ViewHolder extends ListBaseViewHolder<ResultItemLayoutBinding> {
