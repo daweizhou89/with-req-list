@@ -19,6 +19,9 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        OkHttpClientUtils.init(null);
+        OkHttpClientUtils.config()
+                .setUserAgent("daweizhou89/test")   // 设定UserAgent
+                .setAssertMainThread(true)          // 打开检测UI线程执行的断言
+                .setDebugLog(true);
     }
 }

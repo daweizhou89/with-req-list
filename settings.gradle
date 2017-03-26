@@ -1,1 +1,1 @@
-include ':sample', ':core', ':okhttpclientutils', ':listview'
+include ':sample', ':core', ':listview'

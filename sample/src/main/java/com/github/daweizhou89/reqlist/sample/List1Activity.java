@@ -34,8 +34,9 @@ public class List1Activity extends AppCompatActivity {
                         return null;
                     }
                 })
-                .setLoadMore(false)
+                .setLoadMore(true)
                 .setItemTag("list1")
+                .setPageSize(10)
                 .setItemType(ItemType.TYPE_RESULT)
                 .setOnLoadImpl(new CommonHttpLoader.OnLoadImpl() {
                     @Override

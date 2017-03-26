@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(this, List1Activity.class));
                 break;
             case R.id.list2:
-                startActivity(new Intent(this, List1Activity.class));
+                startActivity(new Intent(this, List2Activity.class));
                 break;
         }
     }

@@ -3,6 +3,7 @@ package com.github.daweizhou89.reqlist.adapter;
 import android.content.Context;
 import android.support.annotation.CallSuper;
 import android.support.v7.widget.RecyclerView;
+import android.view.ViewGroup;
 
 import com.github.daweizhou89.listview.RecyclerListView;
 import com.github.daweizhou89.listview.adapter.AnimationBaseAdapter;
@@ -28,6 +29,14 @@ public abstract class BaseListAdapter<VH extends RecyclerView.ViewHolder> extend
         mReqListContext = listController.getContextHolder();
     }
 
+    public BaseListController getListController() {
+        return mListController;
+    }
+
+    public ReqListContext getReqListContext() {
+        return mReqListContext;
+    }
+
     @Override
     @CallSuper
     public void onViewDetachedFromWindow(VH holder) {
@@ -44,6 +53,11 @@ public abstract class BaseListAdapter<VH extends RecyclerView.ViewHolder> extend
         if (holder instanceof IViewAttachable) {
             ((IViewAttachable) holder).onViewAttachedToWindow();
         }
+    }
+
+    @Override
+    public VH onCreateViewHolder(ViewGroup parent, int viewType) {
+        return onCreateViewHolderII(parent, viewType);
     }
 
     @Override
@@ -80,5 +94,7 @@ public abstract class BaseListAdapter<VH extends RecyclerView.ViewHolder> extend
             ((ILoadFooterCreator) this).onLoadFooterStateChanged(ILoadFooterCreator.State.NO_MORE);
         }
     }
+
+    protected abstract VH onCreateViewHolderII(ViewGroup parent, int viewType);
 
 }

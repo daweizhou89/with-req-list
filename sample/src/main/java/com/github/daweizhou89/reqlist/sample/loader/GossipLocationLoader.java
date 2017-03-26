@@ -22,7 +22,7 @@ import java.util.List;
 public class GossipLocationLoader extends BaseHttpLoader<Result> {
 
     public GossipLocationLoader(BaseListController listController) {
-        super(listController);
+        super(listController, true);
     }
 
     @Override

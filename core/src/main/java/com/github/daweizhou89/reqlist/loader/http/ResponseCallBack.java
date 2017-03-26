@@ -1,13 +1,12 @@
 package com.github.daweizhou89.reqlist.loader.http;
 
-import com.github.daweizhou89.okhttpclientutils.TextResponseCallback;
 import com.github.daweizhou89.reqlist.DebugLog;
 import com.github.daweizhou89.reqlist.ReqList;
 
 /**
  * Created by zhoudawei on 2017/3/25.
  */
-public class ResponseCallBack implements TextResponseCallback {
+public class ResponseCallBack implements com.github.daweizhou89.okhttpclientutils.ResponseCallback {
 
     protected BaseHttpLoader mLoader;
 

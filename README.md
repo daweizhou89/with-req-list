@@ -1,5 +1,25 @@
+[![Release](https://jitpack.io/v/daweizhou89/with-req-list.svg)](https://jitpack.io/#daweizhou89/with-req-list)
+
 # with-req-list
 with-req-list基于RecyclerView，SwipeRefreshLayout封装，目的是简化列表数据请求和实现。
+
+## gradle配置
+添加maven仓库配置到根build.gradle
+```
+allprojects {
+    repositories {
+        jcenter()
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+
+添加依赖到应用的build.gradle
+```
+dependencies {
+    compile 'com.github.daweizhou89:with-req-list:0.1.0'
+}
+```
 
 ## xml配置
 xml中添加, 例如sample中的activity_list1.xml
