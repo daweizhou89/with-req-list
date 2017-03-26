@@ -15,7 +15,7 @@ public class LoadFooterHolder extends BaseLoadFooterHolder<LoadFooterItemLayoutB
     }
 
     @Override
-    protected void onStateChanged(ILoadFooterCreator.State state) {
+    public void onStateChanged(ILoadFooterCreator.State state) {
         if (state == ILoadFooterCreator.State.NO_MORE) {
             binding.text.setText(mAdapter.getReqListContext().getNoMoreText());
         } else {

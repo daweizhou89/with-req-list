@@ -31,5 +31,5 @@ public abstract class BaseLoadFooterHolder<VDB extends ViewDataBinding> extends 
         }
     }
 
-    protected abstract void onStateChanged(ILoadFooterCreator.State state);
+    public abstract void onStateChanged(ILoadFooterCreator.State state);
 }

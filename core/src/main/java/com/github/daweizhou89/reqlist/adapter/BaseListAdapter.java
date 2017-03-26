@@ -6,7 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import com.github.daweizhou89.listview.RecyclerListView;
-import com.github.daweizhou89.listview.adapter.AnimationBaseAdapter;
+import com.github.daweizhou89.listview.adapter.BaseAnimationAdapter;
 import com.github.daweizhou89.reqlist.ReqListContext;
 import com.github.daweizhou89.reqlist.controler.BaseListController;
 import com.github.daweizhou89.reqlist.holder.ViewBaseHolder;
@@ -14,7 +14,7 @@ import com.github.daweizhou89.reqlist.interfaces.IViewAttachable;
 import com.github.daweizhou89.reqlist.model.ListItem;
 
 
-public abstract class BaseListAdapter<VH extends RecyclerView.ViewHolder> extends AnimationBaseAdapter<VH> {
+public abstract class BaseListAdapter<VH extends RecyclerView.ViewHolder> extends BaseAnimationAdapter<VH> {
 
     protected BaseListController mListController;
 

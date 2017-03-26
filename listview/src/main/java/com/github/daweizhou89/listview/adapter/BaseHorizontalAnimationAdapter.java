@@ -16,9 +16,9 @@ import android.view.View;
  * Created by daweizhou89 on 2016/11/2.
  */
 
-public abstract class HorizontalAnimationBaseAdapter<VH extends RecyclerView.ViewHolder> extends AnimationBaseAdapter<VH> {
+public abstract class BaseHorizontalAnimationAdapter<VH extends RecyclerView.ViewHolder> extends BaseAnimationAdapter<VH> {
 
-    public HorizontalAnimationBaseAdapter(Context context) {
+    public BaseHorizontalAnimationAdapter(Context context) {
         super(context);
     }
 

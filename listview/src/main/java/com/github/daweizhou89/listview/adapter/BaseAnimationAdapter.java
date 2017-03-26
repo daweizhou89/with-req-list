@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by daweizhou89 on 2016/11/2.
  */
-public abstract class AnimationBaseAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
+public abstract class BaseAnimationAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 
     private static int DEFAULT_DURATION_TIME = 500;
 
@@ -29,7 +29,7 @@ public abstract class AnimationBaseAdapter<VH extends RecyclerView.ViewHolder> e
 
     protected final LayoutInflater mLayoutInflater;
 
-    public AnimationBaseAdapter(Context context) {
+    public BaseAnimationAdapter(Context context) {
         mContext = context;
         mLayoutInflater = LayoutInflater.from(context);
     }

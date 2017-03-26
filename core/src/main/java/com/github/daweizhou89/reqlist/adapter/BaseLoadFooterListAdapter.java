@@ -13,6 +13,8 @@ import com.github.daweizhou89.reqlist.model.ListItem;
  */
 public abstract class BaseLoadFooterListAdapter extends BaseListAdapter implements ILoadFooterCreator {
 
+    private BaseLoadFooterHolder mLoadFooterHolder;
+
     public BaseLoadFooterListAdapter(Context context) {
         super(context);
     }
@@ -24,6 +26,29 @@ public abstract class BaseLoadFooterListAdapter extends BaseListAdapter implemen
             return onCreateLoadViewHolder(parent);
         }
         return onCreateViewHolderII(parent, viewType);
+    }
+
+    @Override
+    public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+        if (holder instanceof BaseLoadFooterHolder) {
+            mLoadFooterHolder = (BaseLoadFooterHolder) holder;
+        }
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(RecyclerView.ViewHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+        if (mLoadFooterHolder == holder) {
+            mLoadFooterHolder = null;
+        }
+    }
+
+    @Override
+    public void onLoadFooterStateChanged(State state) {
+        if (mLoadFooterHolder != null) {
+            mLoadFooterHolder.onStateChanged(state);
+        }
     }
 
     protected abstract BaseLoadFooterHolder onCreateLoadViewHolder(ViewGroup parent);
