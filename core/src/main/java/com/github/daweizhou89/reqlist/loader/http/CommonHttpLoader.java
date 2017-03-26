@@ -65,7 +65,7 @@ public final class CommonHttpLoader extends BaseHttpLoader {
     }
 
     @Override
-    public void onResponse(String key, String response, boolean more) {
+    public void onResponse(String response, boolean more) {
         if (mItemParser != null) {
             List items = mItemParser.parseItems(response);
             if (more) {

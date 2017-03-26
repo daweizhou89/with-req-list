@@ -15,7 +15,7 @@ public class MoreResponseCallback extends ResponseCallBack {
     public void onSuccess(String url, String response) {
         if (mLoader.isEffectiveTime()) {
             mLoader.updatePageNo();
-            mLoader.onResponse(url, response, true);
+            mLoader.onResponse(response, true);
             mLoader.sendUpdateMessage();
         }
         mLoader.onLoadMoreComplete();
@@ -26,7 +26,7 @@ public class MoreResponseCallback extends ResponseCallBack {
         if (DebugLog.DEBUG) {
             DebugLog.e(getClass(), "onFailure", url, throwable);
         }
-        mLoader.onResponseError(url, throwable, true);
+        mLoader.onResponseError(throwable, true);
         mLoader.onLoadMoreComplete();
     }
 }

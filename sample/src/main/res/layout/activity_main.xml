@@ -18,13 +18,19 @@
             android:id="@+id/list1"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:text="CommonListManager例子"/>
+            android:text="HttpListController例子"/>
 
         <Button
             android:id="@+id/list2"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:text="自定义ListManager例子"/>
+            android:text="自定义ListController例子"/>
+
+        <Button
+            android:id="@+id/list3"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:text="RxLoader例子"/>
 
     </LinearLayout>
 </layout>

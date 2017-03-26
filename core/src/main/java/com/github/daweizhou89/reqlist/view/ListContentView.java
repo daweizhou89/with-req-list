@@ -70,7 +70,7 @@ public class ListContentView extends FrameLayout implements IContentView {
 
         int swipeRefreshListId;
 
-        BaseListController listManager;
+        BaseListController listController;
 
         boolean requestData = true;
 
@@ -88,8 +88,8 @@ public class ListContentView extends FrameLayout implements IContentView {
             return this;
         }
 
-        public InitHelper setListManager(BaseListController listManager) {
-            this.listManager = listManager;
+        public InitHelper setListController(BaseListController listController) {
+            this.listController = listController;
             return this;
         }
 
@@ -120,10 +120,10 @@ public class ListContentView extends FrameLayout implements IContentView {
             }
 
             listContentView.mSwipeRefreshList = swipeRefreshListView;
-            listManager.getListManagerViewHolder().setLoadTipsView(loadView);
-            listManager.getListManagerViewHolder().setSwipeRefreshList(swipeRefreshListView);
-            listManager.getListManagerViewHolder().setRecyclerListView(swipeRefreshListView.getRecyclerView());
-            listContentView.mListController = listManager;
+            listController.getListManagerViewHolder().setLoadTipsView(loadView);
+            listController.getListManagerViewHolder().setSwipeRefreshList(swipeRefreshListView);
+            listController.getListManagerViewHolder().setRecyclerListView(swipeRefreshListView.getRecyclerView());
+            listContentView.mListController = listController;
             if (requestData) {
                 listContentView.refreshData();
             }

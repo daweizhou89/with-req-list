@@ -1,8 +1,8 @@
 package com.github.daweizhou89.reqlist.sample.holder;
 
 import com.github.daweizhou89.reqlist.adapter.BaseListAdapter;
-import com.github.daweizhou89.reqlist.holder.BaseLoadFooterHolder;
 import com.github.daweizhou89.reqlist.adapter.ILoadFooterCreator;
+import com.github.daweizhou89.reqlist.holder.BaseLoadFooterHolder;
 import com.github.daweizhou89.reqlist.sample.databinding.LoadFooterItemLayoutBinding;
 
 /**

@@ -8,13 +8,13 @@ import com.github.daweizhou89.reqlist.controler.BaseListController;
  * Created by zhoudawei on 2017/3/25.
  */
 
-public class HttpCacheHelper {
+class CacheDataHelper {
 
     private BaseHttpLoader mLoader;
 
     private BaseListController mListController;
 
-    public HttpCacheHelper(BaseHttpLoader loader, BaseListController listController) {
+    public CacheDataHelper(BaseHttpLoader loader, BaseListController listController) {
         this.mLoader = loader;
         this.mListController = listController;
     }
@@ -28,7 +28,7 @@ public class HttpCacheHelper {
                     if (DebugLog.DEBUG) {
                         DebugLog.d(getClass(), "initCacheDataInternal", cacheKey + "," + cacheData);
                     }
-                    mLoader.onResponse(cacheKey, cacheData, false);
+                    mLoader.onResponse(cacheData, false);
                 }
                 if (!mLoader.isEmpty()) {
                     mListController.sendUpdateMessage();

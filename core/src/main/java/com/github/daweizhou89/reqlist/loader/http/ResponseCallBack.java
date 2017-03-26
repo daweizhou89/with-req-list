@@ -20,7 +20,7 @@ public class ResponseCallBack implements com.github.daweizhou89.okhttpclientutil
         if (cacheKey != null) {
             ReqList.getDataCacheManager().put(mLoader.getCacheKey(), response);
         }
-        mLoader.onResponse(url, response, false);
+        mLoader.onResponse(response, false);
         mLoader.afterLoading();
     }
 
@@ -29,7 +29,7 @@ public class ResponseCallBack implements com.github.daweizhou89.okhttpclientutil
         if (DebugLog.DEBUG) {
             DebugLog.e(getClass(), "onFailure", url, throwable);
         }
-        mLoader.onResponseError(url, throwable, false);
+        mLoader.onResponseError(throwable, false);
         mLoader.afterLoading();
     }
 }

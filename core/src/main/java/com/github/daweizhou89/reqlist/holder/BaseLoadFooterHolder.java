@@ -6,7 +6,6 @@ import android.view.View;
 import com.github.daweizhou89.listview.RecyclerListView;
 import com.github.daweizhou89.reqlist.adapter.BaseListAdapter;
 import com.github.daweizhou89.reqlist.adapter.ILoadFooterCreator;
-import com.github.daweizhou89.reqlist.holder.ListBaseViewHolder;
 
 /**
  * Created by zhoudawei on 2017/3/26.

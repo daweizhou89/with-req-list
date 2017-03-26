@@ -18,10 +18,8 @@ public interface ILoader<R> {
 
     int getLoadType();
 
-    /** key：url or data key */
-    void onResponse(String key, R response, boolean more);
+    void onResponse(R response, boolean more);
 
-    /** key：url or data key */
-    void onResponseError(String key, Throwable throwable, boolean more);
+    void onResponseError(Throwable throwable, boolean more);
 
 }

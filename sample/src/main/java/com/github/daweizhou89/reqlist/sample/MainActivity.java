@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.list1.setOnClickListener(this);
         binding.list2.setOnClickListener(this);
+        binding.list3.setOnClickListener(this);
     }
 
     @Override
@@ -26,6 +27,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.list2:
                 startActivity(new Intent(this, List2Activity.class));
+                break;
+            case R.id.list3:
+                startActivity(new Intent(this, List3Activity.class));
                 break;
         }
     }

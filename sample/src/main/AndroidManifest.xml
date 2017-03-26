@@ -26,6 +26,10 @@
         <activity
             android:name=".List2Activity"
             android:label="List2Activity"/>
+
+        <activity
+            android:name=".List3Activity"
+            android:label="List3Activity"/>
     </application>
 
 </manifest>

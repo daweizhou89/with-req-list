@@ -3,6 +3,10 @@
 # with-req-list
 with-req-list基于RecyclerView，SwipeRefreshLayout封装，目的是简化列表数据请求和实现。
 
+* 使用HttpListController，简易显示列表；
+* 自定义ListController，封装复杂的列表；
+* 自定义RxLoader，可以通过RxJava支持Http和数据库加载；
+
 ## gradle配置
 添加maven仓库配置到根build.gradle
 ```
@@ -17,7 +21,7 @@ allprojects {
 添加依赖到应用的build.gradle
 ```
 dependencies {
-    compile 'com.github.daweizhou89:with-req-list:0.1.1'
+    compile 'com.github.daweizhou89:with-req-list:0.1.2'
 }
 ```
 
@@ -91,7 +95,7 @@ public class List1Activity extends AppCompatActivity {
 
         binding.listContentView
                 .getInitHelper()
-                .setListManager(listController)
+                .setListController(listController)
                 .setSwipeRefreshListId(R.id.content_list)
                 .setLoadViewId(R.id.load_tips_view)
                 .init();
@@ -146,10 +150,10 @@ public class List2Activity extends AppCompatActivity {
         ActivityList2Binding binding = DataBindingUtil.setContentView(this, R.layout.activity_list2);
 
         ReqListContext reqListContext = new ReqListContext.Builder(this, new ResultListAdapter(this)).build();
-        GossipLocationListController listManager = new GossipLocationListController(reqListContext);
+        GossipLocationListController listController = new GossipLocationListController(reqListContext);
         binding.listContentView
                 .getInitHelper()
-                .setListManager(listManager)
+                .setListController(listController)
                 .setSwipeRefreshListId(R.id.content_list)
                 .init();
     }
@@ -192,7 +196,7 @@ public class GossipLocationLoader extends BaseHttpLoader<Result> {
     }
 
     @Override
-    public void onResponse(String url, String responseStr, boolean more) {
+    public void onResponse(String responseStr, boolean more) {
         Response response = null;
         try {
             response = new Gson().fromJson(responseStr, Response.class);
@@ -207,6 +211,39 @@ public class GossipLocationLoader extends BaseHttpLoader<Result> {
     @Override
     protected void onLoad(int pageNo, boolean more, ResponseCallBack callback, Object... inputs) {
         OkHttpClientUtils.get("http://sugg.us.search.yahoo.net/gossip-gl-location/?appid=weather&output=json&command=%E5%B9%BF", null, callback);
+    }
+
+    @Override
+    protected void onBuild(Object... inputs) {
+        if (isEmpty()) {
+            return;
+        }
+        for (Result data : mData) {
+            addListItem(new ListItem(ItemType.TYPE_RESULT, data));
+        }
+    }
+}
+```
+
+## RxLoader例子
+RxGossipLocationLoader
+```java
+public class RxGossipLocationLoader extends BaseRxLoader<Result, Response> {
+
+    public RxGossipLocationLoader(BaseListController listController) {
+        super(listController, true);
+    }
+
+    @Override
+    public void onResponse(Response response, boolean more) {
+        Gossip gossip = response.gossip;
+        List<Result> results = gossip != null ? gossip.results : null;
+        setData(results);
+    }
+
+    @Override
+    public Observable<Response> onCreateObservable(int pageNo, boolean more, Object... inputs) {
+        return OkHttpClientUtils.get("http://sugg.us.search.yahoo.net/gossip-gl-location/?appid=weather&output=json&command=%E5%B9%BF", null, Response.class);
     }
 
     @Override

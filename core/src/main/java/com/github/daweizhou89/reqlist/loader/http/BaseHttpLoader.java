@@ -15,7 +15,7 @@ public abstract class BaseHttpLoader<LD extends Object> extends BaseLoader<LD, S
     /** 加载更多回调 */
     protected MoreResponseCallback mMoreCallback;
     /** 缓存辅助类 */
-    protected HttpCacheHelper mHttpCacheHelper;
+    protected CacheDataHelper mCacheDataHelper;
 
     public BaseHttpLoader(BaseListController listController) {
         this(listController, false);
@@ -23,49 +23,57 @@ public abstract class BaseHttpLoader<LD extends Object> extends BaseLoader<LD, S
 
     public BaseHttpLoader(BaseListController listController, boolean loadMore) {
         super(listController, loadMore);
-        mHttpCacheHelper = new HttpCacheHelper(this, listController);
+        mCacheDataHelper = new CacheDataHelper(this, listController);
         mCallBack = new ResponseCallBack(this);
         mMoreCallback = new MoreResponseCallback(this);
         initCacheData();
     }
 
     public final void initCacheData() {
-        mHttpCacheHelper.initCacheData();
+        mCacheDataHelper.initCacheData();
     }
 
     @Override
     public final void load(boolean more, Object... inputs) {
         if (!more) {
-            // 避免重复请求
-            if (isLoading()) {
-                return;
-            }
-            setLoading();
-            mPageNo = 1;
-            mListItemPositionStart = -1;
-            onLoad(mPageNo, false, mCallBack, inputs);
+            loadFirst(inputs);
         } else {
-            if (isLoading()) {
-                mListController.onLoadMoreComplete();
-                return;
-            }
-            if (!mDuringLoadingMore) {
-                mDuringLoadingMore = true;
-                mLoadMoreTimestamp = SystemClock.elapsedRealtime();
-                final int morePageNo = mPageNo + 1;
-                mMorePageNo = morePageNo;
-                onLoad(morePageNo, true, mMoreCallback, inputs);
-            }
+            loadMore(inputs);
+        }
+    }
+
+    private void loadFirst(Object... inputs) {
+        // 避免重复请求
+        if (isLoading()) {
+            return;
+        }
+        setLoading();
+        mPageNo = 1;
+        mListItemPositionStart = -1;
+        onLoad(mPageNo, false, mCallBack, inputs);
+    }
+
+    private void loadMore(Object... inputs) {
+        if (isLoading()) {
+            mListController.onLoadMoreComplete();
+            return;
+        }
+        if (!mDuringLoadingMore) {
+            mDuringLoadingMore = true;
+            mLoadMoreTimestamp = SystemClock.elapsedRealtime();
+            final int morePageNo = mPageNo + 1;
+            mMorePageNo = morePageNo;
+            onLoad(morePageNo, true, mMoreCallback, inputs);
         }
     }
 
     @Override
-    public void onResponse(String url, String response, boolean more) {
+    public void onResponse(String response, boolean more) {
         // TODO nothing
     }
 
     @Override
-    public void onResponseError(String url, Throwable throwable, boolean more) {
+    public void onResponseError(Throwable throwable, boolean more) {
         // TODO nothing
     }
 
