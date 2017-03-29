@@ -22,11 +22,10 @@ public abstract class BaseAnimationAdapter<VH extends RecyclerView.ViewHolder> e
     private int mDuration = DEFAULT_DURATION_TIME;
     private Interpolator mInterpolator = new OvershootInterpolator(.5f);
     private int mLastPosition = -1;
-
     private boolean mFirstOnly = true;
 
     protected final Context mContext;
-
+    protected int mPosition = -1;
     protected final LayoutInflater mLayoutInflater;
 
     public BaseAnimationAdapter(Context context) {
@@ -44,6 +43,7 @@ public abstract class BaseAnimationAdapter<VH extends RecyclerView.ViewHolder> e
 
     @Override
     public final void onBindViewHolder(VH holder, int position) {
+        mPosition = position;
         onBindViewHolderII(holder, position);
         tryStartAnim(holder);
     }
