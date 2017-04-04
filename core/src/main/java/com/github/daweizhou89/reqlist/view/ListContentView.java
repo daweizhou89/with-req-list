@@ -6,7 +6,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.github.daweizhou89.listview.SwipeRefreshList;
+import com.github.daweizhou89.listview.ISwipeRefreshWrapper;
 import com.github.daweizhou89.reqlist.controler.BaseListController;
 
 /**
@@ -17,7 +17,7 @@ public class ListContentView extends FrameLayout implements IContentView {
     /** 列表Manager */
     protected BaseListController mListController;
     /** 可以刷新的列表 */
-    protected SwipeRefreshList mSwipeRefreshList;
+    protected ISwipeRefreshWrapper mSwipeRefreshWrapper;
 
     public ListContentView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -34,8 +34,8 @@ public class ListContentView extends FrameLayout implements IContentView {
     public void refreshData() {
         mListController.getListManagerViewHolder().smoothScrollToTop();
         if (!mListController.isEmpty()) {
-            if (!mSwipeRefreshList.isRefreshing()) {
-                mSwipeRefreshList.setRefreshing(true);
+            if (!mSwipeRefreshWrapper.isRefreshing()) {
+                mSwipeRefreshWrapper.setRefreshing(true);
             }
             mListController.requestData();
         } else {
@@ -68,7 +68,7 @@ public class ListContentView extends FrameLayout implements IContentView {
 
         int loadViewId;
 
-        int swipeRefreshListId;
+        int swipeRefreshWrapperId;
 
         BaseListController listController;
 
@@ -83,8 +83,8 @@ public class ListContentView extends FrameLayout implements IContentView {
             return this;
         }
 
-        public InitHelper setSwipeRefreshListId(int swipeRefreshListId) {
-            this.swipeRefreshListId = swipeRefreshListId;
+        public InitHelper setSwipeRefreshWrapperId(int swipeRefreshWrapperId) {
+            this.swipeRefreshWrapperId = swipeRefreshWrapperId;
             return this;
         }
 
@@ -100,29 +100,29 @@ public class ListContentView extends FrameLayout implements IContentView {
 
         public void init() {
             ILoadView loadView = null;
-            SwipeRefreshList swipeRefreshListView = null;
+            ISwipeRefreshWrapper swipeRefreshWrapper = null;
             if (loadViewId > 0) {
                 loadView = (ILoadView) listContentView.findViewById(loadViewId);
             }
-            if (swipeRefreshListId > 0) {
-                swipeRefreshListView = (SwipeRefreshList) listContentView.findViewById(swipeRefreshListId);
+            if (swipeRefreshWrapperId > 0) {
+                swipeRefreshWrapper = (ISwipeRefreshWrapper) listContentView.findViewById(swipeRefreshWrapperId);
             }
             for (int i = 0; i < listContentView.getChildCount(); i++) {
-                if (swipeRefreshListView != null && loadView != null) {
+                if (swipeRefreshWrapper != null && loadView != null) {
                     break;
                 }
                 View child = listContentView.getChildAt(i);
-                if (child instanceof SwipeRefreshList) {
-                    swipeRefreshListView = (SwipeRefreshList) child;
+                if (child instanceof ISwipeRefreshWrapper) {
+                    swipeRefreshWrapper = (ISwipeRefreshWrapper) child;
                 } else if (child instanceof ILoadView) {
                     loadView = (ILoadView) child;
                 }
             }
 
-            listContentView.mSwipeRefreshList = swipeRefreshListView;
+            listContentView.mSwipeRefreshWrapper = swipeRefreshWrapper;
             listController.getListManagerViewHolder().setLoadTipsView(loadView);
-            listController.getListManagerViewHolder().setSwipeRefreshList(swipeRefreshListView);
-            listController.getListManagerViewHolder().setRecyclerListView(swipeRefreshListView.getRecyclerView());
+            listController.getListManagerViewHolder().setSwipeRefreshWrapper(swipeRefreshWrapper);
+            listController.getListManagerViewHolder().setRecyclerListView(swipeRefreshWrapper.getRecyclerView());
             listContentView.mListController = listController;
             if (requestData) {
                 listContentView.refreshData();

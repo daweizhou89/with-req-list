@@ -10,23 +10,27 @@ import android.view.LayoutInflater;
 /**
  * Created by daweizhou89 on 16/3/18.
  */
-public class SwipeRefreshList extends SwipeRefreshLayout implements SwipeRefreshLayout.OnRefreshListener {
+public class SupportSwipeRefreshWrapper extends SwipeRefreshLayout implements ISwipeRefreshWrapper, SwipeRefreshLayout.OnRefreshListener {
+
+    private static int[] sSwipeColorSchemeColors;
+
+    private static int sRecyclerListViewResources = R.layout.recycler_list_view;
 
     protected RecyclerListView mRecyclerView;
 
     private OnListRefreshListener mOnListRefreshListener;
 
-    public SwipeRefreshList(Context context) {
+    public SupportSwipeRefreshWrapper(Context context) {
         this(context, null);
     }
 
-    public SwipeRefreshList(Context context, AttributeSet attrs) {
+    public SupportSwipeRefreshWrapper(Context context, AttributeSet attrs) {
         super(context, attrs);
         initViews();
     }
 
     private void initViews() {
-        int[] colors = SwipeRefreshListConfig.getSwipeColorSchemeColors();
+        int[] colors = sSwipeColorSchemeColors;
         if (colors != null) {
             setColorSchemeColors(colors);
         }
@@ -37,31 +41,22 @@ public class SwipeRefreshList extends SwipeRefreshLayout implements SwipeRefresh
 
     protected void setupRecyclerView() {
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        mRecyclerView = (RecyclerListView) layoutInflater.inflate(SwipeRefreshListConfig.getRecyclerListViewResources(), null);
+        mRecyclerView = (RecyclerListView) layoutInflater.inflate(sRecyclerListViewResources, null);
         addView(mRecyclerView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
     }
 
+    @Override
     public RecyclerListView getRecyclerView() {
         return mRecyclerView;
     }
 
+    @Override
     public void setOnListRefreshListener(OnListRefreshListener onListRefreshListener) {
         mOnListRefreshListener = onListRefreshListener;
         mRecyclerView.setOnLoadMoreListener(onListRefreshListener);
     }
 
-    public void addOnScrollListener(RecyclerView.OnScrollListener listener) {
-        mRecyclerView.addOnScrollListener(listener);
-    }
-
-    public void removeOnScrollListener(RecyclerView.OnScrollListener listener) {
-        mRecyclerView.removeOnScrollListener(listener);
-    }
-
-    /***
-     * 有下一页数据时，打开／关闭加载更多
-     * @param enable
-     */
+    @Override
     public void setLoadMoreEnable(boolean enable) {
         mRecyclerView.setLoadMoreEnable(enable);
     }
@@ -73,32 +68,49 @@ public class SwipeRefreshList extends SwipeRefreshLayout implements SwipeRefresh
         }
     }
 
+    @Override
     public void setAdapter(RecyclerView.Adapter adapter) {
         mRecyclerView.setAdapter(adapter);
     }
 
-    /***
-     * －－重要－－
-     * 数据请求完成后，须调用该方法
-     */
+    @Override
     public void onRefreshComplete() {
         this.setRefreshing(false);
     }
 
-    /***
-     * －－重要－－
-     * 加载更多完成后，须调用该方法
-     */
+    @Override
     public void onLoadMoreComplete() {
         mRecyclerView.onLoadMoreComplete();
     }
 
-    /**
-     * 刷新／加载更多监听器
-     * onLoadMore 在调用 setLoadMoreEnable(true)才有效
-     */
-    public interface OnListRefreshListener extends RecyclerListView.OnLoadMoreListener {
-        void onBeforeRefresh();
-        void onRefresh();
+    public static Config customize() {
+        return new Config();
+    }
+
+    public static class Config {
+
+        int[] swipeColorSchemeColors;
+
+        int recyclerListViewResources;
+
+        private Config() {
+        }
+
+        public Config setSwipeColorSchemeColors(int[] swipeColorSchemeColors) {
+            this.swipeColorSchemeColors = swipeColorSchemeColors;
+            return this;
+        }
+
+        public Config setRecyclerListViewResources(int recyclerListViewResources) {
+            this.recyclerListViewResources = recyclerListViewResources;
+            return this;
+        }
+
+        public void init() {
+            sSwipeColorSchemeColors = swipeColorSchemeColors;
+            if (recyclerListViewResources > 0) {
+                sRecyclerListViewResources = recyclerListViewResources;
+            }
+        }
     }
 }

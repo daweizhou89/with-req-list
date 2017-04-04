@@ -21,7 +21,7 @@ public class List2Activity extends AppCompatActivity {
         binding.listContentView
                 .getInitHelper()
                 .setListController(listManager)
-                .setSwipeRefreshListId(R.id.content_list)
+                .setSwipeRefreshWrapperId(R.id.content_list)
                 .init();
     }
 }

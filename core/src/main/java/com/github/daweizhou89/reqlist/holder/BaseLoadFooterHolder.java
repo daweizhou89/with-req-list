@@ -10,19 +10,19 @@ import com.github.daweizhou89.reqlist.adapter.ILoadFooterCreator;
 /**
  * Created by zhoudawei on 2017/3/26.
  */
-public abstract class BaseLoadFooterHolder<VDB extends ViewDataBinding> extends ListBaseViewHolder<VDB> {
+public abstract class BaseLoadFooterHolder<VDB extends ViewDataBinding> extends BaseViewHolder<VDB> {
 
-    public BaseLoadFooterHolder(BaseListAdapter adapter, View itemView) {
-        super(adapter, itemView);
+    public BaseLoadFooterHolder(View itemView) {
+        super(itemView);
     }
 
-    public BaseLoadFooterHolder(BaseListAdapter adapter, VDB binding) {
-        super(adapter, binding);
+    public BaseLoadFooterHolder(VDB binding) {
+        super(binding);
     }
 
     @Override
     public final void bindData(int position) {
-        RecyclerListView recyclerView = mAdapter.getListController().getRecyclerView();
+        RecyclerListView recyclerView = adapter.getListController().getRecyclerView();
         if (recyclerView.isLoadMoreEnable()) {
             onStateChanged(ILoadFooterCreator.State.LOADING_MORE);
         } else {

@@ -10,16 +10,16 @@ import com.github.daweizhou89.reqlist.sample.databinding.LoadFooterItemLayoutBin
  */
 public class LoadFooterHolder extends BaseLoadFooterHolder<LoadFooterItemLayoutBinding> {
 
-    public LoadFooterHolder(BaseListAdapter adapter, LoadFooterItemLayoutBinding binding) {
-        super(adapter, binding);
+    public LoadFooterHolder(LoadFooterItemLayoutBinding binding) {
+        super(binding);
     }
 
     @Override
     public void onStateChanged(ILoadFooterCreator.State state) {
         if (state == ILoadFooterCreator.State.NO_MORE) {
-            binding.text.setText(mAdapter.getReqListContext().getNoMoreText());
+            binding.text.setText(adapter.getReqListContext().getNoMoreText());
         } else {
-            binding.text.setText(mAdapter.getReqListContext().getLoadingMoreText());
+            binding.text.setText(adapter.getReqListContext().getLoadingMoreText());
         }
     }
 }

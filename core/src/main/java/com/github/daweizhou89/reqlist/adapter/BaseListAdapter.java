@@ -9,7 +9,7 @@ import com.github.daweizhou89.listview.RecyclerListView;
 import com.github.daweizhou89.listview.adapter.BaseAnimationAdapter;
 import com.github.daweizhou89.reqlist.ReqListContext;
 import com.github.daweizhou89.reqlist.controler.BaseListController;
-import com.github.daweizhou89.reqlist.holder.ViewBaseHolder;
+import com.github.daweizhou89.reqlist.holder.BaseViewHolder;
 import com.github.daweizhou89.reqlist.interfaces.IViewAttachable;
 import com.github.daweizhou89.reqlist.model.ListItem;
 
@@ -24,7 +24,7 @@ public abstract class BaseListAdapter<VH extends RecyclerView.ViewHolder> extend
         super(context);
     }
 
-    public void setListController(BaseListController listController) {
+    public final void setListController(BaseListController listController) {
         this.mListController = listController;
         mReqListContext = listController.getContextHolder();
     }
@@ -41,6 +41,9 @@ public abstract class BaseListAdapter<VH extends RecyclerView.ViewHolder> extend
     @CallSuper
     public void onViewDetachedFromWindow(VH holder) {
         super.onViewDetachedFromWindow(holder);
+        if (holder instanceof BaseViewHolder) {
+            ((BaseViewHolder) holder).attach = false;
+        }
         if (holder instanceof IViewAttachable) {
             ((IViewAttachable) holder).onViewDetachedFromWindow();
         }
@@ -50,6 +53,9 @@ public abstract class BaseListAdapter<VH extends RecyclerView.ViewHolder> extend
     @CallSuper
     public void onViewAttachedToWindow(VH holder) {
         super.onViewAttachedToWindow(holder);
+        if (holder instanceof BaseViewHolder) {
+            ((BaseViewHolder) holder).attach = true;
+        }
         if (holder instanceof IViewAttachable) {
             ((IViewAttachable) holder).onViewAttachedToWindow();
         }
@@ -63,8 +69,10 @@ public abstract class BaseListAdapter<VH extends RecyclerView.ViewHolder> extend
     @Override
     @CallSuper
     public void onBindViewHolderII(VH holder, int position) {
-        if (holder instanceof ViewBaseHolder) {
-            ViewBaseHolder viewHolder = (ViewBaseHolder) holder;
+        if (holder instanceof BaseViewHolder) {
+            BaseViewHolder viewHolder = (BaseViewHolder) holder;
+            viewHolder.position = position;
+            viewHolder.adapter = this;
             viewHolder.bindData(position);
         }
     }

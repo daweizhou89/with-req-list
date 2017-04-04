@@ -2,8 +2,8 @@ package com.github.daweizhou89.reqlist.controler;
 
 import android.support.annotation.Nullable;
 
+import com.github.daweizhou89.listview.ISwipeRefreshWrapper;
 import com.github.daweizhou89.listview.RecyclerListView;
-import com.github.daweizhou89.listview.SwipeRefreshList;
 import com.github.daweizhou89.reqlist.DebugLog;
 import com.github.daweizhou89.reqlist.ReqListContext;
 import com.github.daweizhou89.reqlist.adapter.BaseListAdapter;
@@ -24,7 +24,7 @@ public class ListControllerViewHolder {
     /**  */
     protected ILoadView mLoadTipsView;
     /**  */
-    protected SwipeRefreshList mSwipeRefreshList;
+    protected ISwipeRefreshWrapper mSwipeRefreshWrapper;
     /**  */
     protected RecyclerListView mRecyclerListView;
 
@@ -51,15 +51,10 @@ public class ListControllerViewHolder {
         }
     }
 
-    /**
-     * 支持动态设置啦
-     *
-     * @param swipeRefreshList 列表
-     */
-    public final void setSwipeRefreshList(SwipeRefreshList swipeRefreshList) {
-        mSwipeRefreshList = swipeRefreshList;
+    public final void setSwipeRefreshWrapper(ISwipeRefreshWrapper swipeRefreshWrapper) {
+        mSwipeRefreshWrapper = swipeRefreshWrapper;
         // 配置上拉刷新
-        mSwipeRefreshList.setOnListRefreshListener(new SwipeRefreshList.OnListRefreshListener() {
+        mSwipeRefreshWrapper.setOnListRefreshListener(new ISwipeRefreshWrapper.OnListRefreshListener() {
 
             @Override
             public void onBeforeRefresh() {
@@ -85,15 +80,15 @@ public class ListControllerViewHolder {
         if (listAdapter instanceof ILoadFooterCreator) {
             recyclerListView.setLoadMoreMode(RecyclerListView.LOAD_MORE_MODE_NORMAL);
         }
-        mSwipeRefreshList.setAdapter(listAdapter);
+        mSwipeRefreshWrapper.setAdapter(listAdapter);
     }
 
     public final ILoadView getLoadTipsView() {
         return mLoadTipsView;
     }
 
-    public final SwipeRefreshList getSwipeRefreshListLayout() {
-        return mSwipeRefreshList;
+    public final ISwipeRefreshWrapper getSwipeRefreshWrapper() {
+        return mSwipeRefreshWrapper;
     }
 
     public final RecyclerListView getRecyclerView() {
@@ -101,7 +96,7 @@ public class ListControllerViewHolder {
     }
 
     protected final void onRefreshComplete() {
-        mSwipeRefreshList.onRefreshComplete();
+        mSwipeRefreshWrapper.onRefreshComplete();
     }
 
     protected final void setLoadState(int state) {
@@ -122,36 +117,30 @@ public class ListControllerViewHolder {
         }
     }
 
-    /***
-     * 需要上拉加载更多的话，掉这个方法
-     *
-     * @param datas     请求返回数据列表
-     * @param pageCount 请求的页大小
-     */
-    public final void trySetLoadMoreEnable(@Nullable List<?> datas, int pageCount) {
-        if (mSwipeRefreshList == null) {
+    public final void trySetLoadMoreEnable(@Nullable List<?> data, int pageCount) {
+        if (mSwipeRefreshWrapper == null) {
             return;
         }
-        int dataSize = datas == null ? 0 : datas.size();
+        int dataSize = data == null ? 0 : data.size();
         trySetLoadMoreEnable(dataSize, pageCount);
     }
 
     public final void trySetLoadMoreEnable(int dataSize, int pageCount) {
-        if (mSwipeRefreshList == null) {
+        if (mSwipeRefreshWrapper == null) {
             return;
         }
         if (DebugLog.DEBUG) {
             DebugLog.v(getClass(), "trySetLoadMoreEnable", "dataSize:" + dataSize + "pageCount:" + pageCount);
         }
         if (dataSize < pageCount) {
-            mSwipeRefreshList.setLoadMoreEnable(false);
+            mSwipeRefreshWrapper.setLoadMoreEnable(false);
         } else {
-            mSwipeRefreshList.setLoadMoreEnable(true);
+            mSwipeRefreshWrapper.setLoadMoreEnable(true);
         }
     }
 
     public final void onLoadMoreComplete() {
-        mSwipeRefreshList.onLoadMoreComplete();
+        mSwipeRefreshWrapper.onLoadMoreComplete();
     }
 
 }

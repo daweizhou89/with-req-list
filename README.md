@@ -33,7 +33,7 @@ xml中添加, 例如sample中的activity_list1.xml
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.github.daweizhou89.listview.SwipeRefreshList
+    <com.github.daweizhou89.listview.SupportSwipeRefreshWrapper
         android:id="@+id/content_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
@@ -96,7 +96,7 @@ public class List1Activity extends AppCompatActivity {
         binding.listContentView
                 .getInitHelper()
                 .setListController(listController)
-                .setSwipeRefreshListId(R.id.content_list)
+                .setSwipeRefreshWrapperId(R.id.content_list)
                 .setLoadViewId(R.id.load_tips_view)
                 .init();
     }
@@ -112,30 +112,31 @@ public class ResultListAdapter extends BaseLoadFooterListAdapter {
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolderII(ViewGroup parent, int viewType) {
+    protected RecyclerView.ViewHolder onCreateViewHolderII(ViewGroup parent, int viewType) {
         ResultItemLayoutBinding binding = DataBindingUtil.inflate(mLayoutInflater, R.layout.result_item_layout, parent, false);
-        return new ViewHolder(this, binding);
+        return new ViewHolder(binding);
     }
 
     @Override
     protected BaseLoadFooterHolder onCreateLoadViewHolder(ViewGroup parent) {
         LoadFooterItemLayoutBinding binding = DataBindingUtil.inflate(mLayoutInflater, R.layout.load_footer_item_layout, parent, false);
-        return new LoadFooterHolder(this, binding);
+        return new LoadFooterHolder(binding);
     }
 
-    public static class ViewHolder extends ListBaseViewHolder<ResultItemLayoutBinding> {
+    public static class ViewHolder extends BaseViewHolder<ResultItemLayoutBinding> {
 
-        public ViewHolder(BaseListAdapter adapter, ResultItemLayoutBinding binding) {
-            super(adapter, binding);
+        public ViewHolder(ResultItemLayoutBinding binding) {
+            super(binding);
         }
 
         @Override
         public void bindData(int position) {
-            ListItem listItem = mAdapter.getListItem(position);
+            ListItem listItem = adapter.getListItem(position);
             Result data = (Result) listItem.getData();
             binding.text.setText(listItem.getIndexOfType() + ". " + data.key);
         }
     }
+
 }
 ```
 
@@ -154,7 +155,7 @@ public class List2Activity extends AppCompatActivity {
         binding.listContentView
                 .getInitHelper()
                 .setListController(listController)
-                .setSwipeRefreshListId(R.id.content_list)
+                .setSwipeRefreshWrapperId(R.id.content_list)
                 .init();
     }
 }

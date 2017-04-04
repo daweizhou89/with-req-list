@@ -21,7 +21,7 @@ public class List3Activity extends AppCompatActivity {
         binding.listContentView
                 .getInitHelper()
                 .setListController(listController)
-                .setSwipeRefreshListId(R.id.content_list)
+                .setSwipeRefreshWrapperId(R.id.content_list)
                 .setRequestData(false) // not requestData() when init
                 .init();
 
