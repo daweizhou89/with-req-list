@@ -21,7 +21,7 @@ allprojects {
 添加依赖到应用的build.gradle
 ```
 dependencies {
-    compile 'com.github.daweizhou89:with-req-list:0.1.2'
+    compile 'com.github.daweizhou89:with-req-list:0.1.3'
 }
 ```
 
