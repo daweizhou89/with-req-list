@@ -19,6 +19,8 @@ import com.google.gson.Gson;
 
 import java.util.List;
 
+import io.reactivex.disposables.Disposable;
+
 public class List1Activity extends AppCompatActivity {
 
     @Override
@@ -40,8 +42,8 @@ public class List1Activity extends AppCompatActivity {
                 .setItemType(ItemType.TYPE_RESULT)
                 .setOnLoadImpl(new CommonHttpLoader.OnLoadImpl() {
                     @Override
-                    public void onLoad(int pageNo, boolean more, ResponseCallBack callback, Object... inputs) {
-                        OkHttpClientUtils.get(loader.getUrl(), null, callback);
+                    public Disposable onLoad(int pageNo, boolean more, ResponseCallBack callback, Object... inputs) {
+                        return OkHttpClientUtils.get(loader.getUrl(), null, callback);
                     }
                 })
                 .setItemParser(new CommonHttpLoader.ItemParser() {

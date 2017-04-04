@@ -10,6 +10,8 @@ import com.github.daweizhou89.reqlist.model.LoadTypeGenerator;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.disposables.Disposable;
+
 /**
  * Created by zhoudawei on 2017/3/25.
  */
@@ -41,6 +43,8 @@ public abstract class BaseLoader<LD, R> implements ILoader<R> {
     protected int mMorePageNo;
     /** ListItem中数据开始位置 */
     protected int mListItemPositionStart;
+    /**  */
+    protected Disposable mDisposable;
 
     public BaseLoader(BaseListController listController, boolean loadMore) {
         this.mListController = listController;
@@ -70,6 +74,10 @@ public abstract class BaseLoader<LD, R> implements ILoader<R> {
         return mData == null || mData.isEmpty();
     }
 
+    public void dispose() {
+        mReqListContext.removeDisposable(mDisposable);
+    }
+
     @Override
     public final boolean isLoading() {
         return mListController.isLoading(mLoadType);
@@ -81,6 +89,7 @@ public abstract class BaseLoader<LD, R> implements ILoader<R> {
 
     public final void afterLoading() {
         mListController.afterLoading(mLoadType);
+        dispose();
     }
 
     public final void sendUpdateMessage() {

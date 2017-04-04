@@ -7,6 +7,7 @@ import com.github.daweizhou89.reqlist.controler.BaseListController;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
@@ -22,36 +23,47 @@ public abstract class BaseRxLoader<LD, R> extends BaseLoader<LD, R> {
 
     @Override
     public void load(boolean more, Object... inputs) {
+        Disposable disposable = null;
         if (!more) {
-            loadFirst(inputs);
+            disposable = loadFirst(inputs);
         } else {
-            loadMore(inputs);
+            disposable = loadMore(inputs);
+        }
+        if (disposable != null) {
+            mDisposable = disposable;
+            mReqListContext.addDisposable(disposable);
         }
     }
 
-    private void loadFirst(Object... inputs) {
+    private Disposable loadFirst(Object... inputs) {
+        Disposable disposable = null;
         // 避免重复请求
         if (isLoading()) {
-            return;
+            return disposable;
         }
         setLoading();
         mPageNo = 1;
         mListItemPositionStart = -1;
-        onSubscribe(onCreateObservable(mPageNo, false, inputs), false);
+        dispose();
+        disposable = onSubscribe(onCreateObservable(mPageNo, false, inputs), false);
+        return disposable;
     }
 
-    private void loadMore(Object... inputs) {
+    private Disposable loadMore(Object... inputs) {
+        Disposable disposable = null;
         if (isLoading()) {
             mListController.onLoadMoreComplete();
-            return;
+            return disposable;
         }
         if (!mDuringLoadingMore) {
             mDuringLoadingMore = true;
             mLoadMoreTimestamp = SystemClock.elapsedRealtime();
             final int morePageNo = mPageNo + 1;
             mMorePageNo = morePageNo;
-            onSubscribe(onCreateObservable(morePageNo, true, inputs), true);
+            dispose();
+            disposable = onSubscribe(onCreateObservable(morePageNo, true, inputs), true);
         }
+        return disposable;
     }
 
     @Override
@@ -59,8 +71,8 @@ public abstract class BaseRxLoader<LD, R> extends BaseLoader<LD, R> {
         // TODO nothing
     }
 
-    public void onSubscribe(Observable<R> observable, final boolean more) {
-        observable.subscribeOn(Schedulers.io())
+    public Disposable onSubscribe(Observable<R> observable, final boolean more) {
+        return observable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<R>() {
                     @Override

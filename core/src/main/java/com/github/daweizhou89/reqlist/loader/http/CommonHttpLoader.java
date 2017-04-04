@@ -9,6 +9,8 @@ import com.github.daweizhou89.reqlist.model.ListItem;
 
 import java.util.List;
 
+import io.reactivex.disposables.Disposable;
+
 /**
  * Created by daweizhou89 on 16/6/29.
  */
@@ -60,8 +62,8 @@ public final class CommonHttpLoader extends BaseHttpLoader {
     }
 
     @Override
-    protected void onLoad(int pageNo, boolean more, ResponseCallBack callback, Object... inputs) {
-        mOnLoadImpl.onLoad(pageNo, more, callback, inputs);
+    protected Disposable onLoad(int pageNo, boolean more, ResponseCallBack callback, Object... inputs) {
+        return mOnLoadImpl.onLoad(pageNo, more, callback, inputs);
     }
 
     @Override
@@ -117,7 +119,7 @@ public final class CommonHttpLoader extends BaseHttpLoader {
 
         protected CommonHttpLoader loader;
 
-        public abstract void onLoad(int pageNo, boolean more, ResponseCallBack callBack, Object... inputs);
+        public abstract Disposable onLoad(int pageNo, boolean more, ResponseCallBack callBack, Object... inputs);
 
         public CommonHttpLoader getLoader() {
             return loader;

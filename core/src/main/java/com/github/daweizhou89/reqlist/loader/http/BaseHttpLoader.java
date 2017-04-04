@@ -5,6 +5,8 @@ import android.os.SystemClock;
 import com.github.daweizhou89.reqlist.controler.BaseListController;
 import com.github.daweizhou89.reqlist.loader.BaseLoader;
 
+import io.reactivex.disposables.Disposable;
+
 /**
  * Created by daweizhou89 on 16/6/29.
  */
@@ -16,10 +18,6 @@ public abstract class BaseHttpLoader<LD extends Object> extends BaseLoader<LD, S
     protected MoreResponseCallback mMoreCallback;
     /** 缓存辅助类 */
     protected CacheDataHelper mCacheDataHelper;
-
-    public BaseHttpLoader(BaseListController listController) {
-        this(listController, false);
-    }
 
     public BaseHttpLoader(BaseListController listController, boolean loadMore) {
         super(listController, loadMore);
@@ -35,36 +33,47 @@ public abstract class BaseHttpLoader<LD extends Object> extends BaseLoader<LD, S
 
     @Override
     public final void load(boolean more, Object... inputs) {
+        Disposable disposable;
         if (!more) {
-            loadFirst(inputs);
+            disposable = loadFirst(inputs);
         } else {
-            loadMore(inputs);
+            disposable = loadMore(inputs);
+        }
+        if (disposable != null) {
+            mDisposable = disposable;
+            mReqListContext.addDisposable(disposable);
         }
     }
 
-    private void loadFirst(Object... inputs) {
+    private Disposable loadFirst(Object... inputs) {
+        Disposable disposable = null;
         // 避免重复请求
         if (isLoading()) {
-            return;
+            return disposable;
         }
         setLoading();
         mPageNo = 1;
         mListItemPositionStart = -1;
-        onLoad(mPageNo, false, mCallBack, inputs);
+        dispose();
+        disposable = onLoad(mPageNo, false, mCallBack, inputs);
+        return disposable;
     }
 
-    private void loadMore(Object... inputs) {
+    private Disposable loadMore(Object... inputs) {
+        Disposable disposable = null;
         if (isLoading()) {
             mListController.onLoadMoreComplete();
-            return;
+            return disposable;
         }
         if (!mDuringLoadingMore) {
             mDuringLoadingMore = true;
             mLoadMoreTimestamp = SystemClock.elapsedRealtime();
             final int morePageNo = mPageNo + 1;
             mMorePageNo = morePageNo;
-            onLoad(morePageNo, true, mMoreCallback, inputs);
+            dispose();
+            disposable = onLoad(morePageNo, true, mMoreCallback, inputs);
         }
+        return disposable;
     }
 
     @Override
@@ -77,6 +86,6 @@ public abstract class BaseHttpLoader<LD extends Object> extends BaseLoader<LD, S
         // TODO nothing
     }
 
-    protected abstract void onLoad(int pageNo, boolean more, ResponseCallBack callback, Object... inputs);
+    protected abstract Disposable onLoad(int pageNo, boolean more, ResponseCallBack callback, Object... inputs);
 
 }

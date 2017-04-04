@@ -14,6 +14,8 @@ import com.google.gson.Gson;
 
 import java.util.List;
 
+import io.reactivex.disposables.Disposable;
+
 /**
  *
  * Created by daweizhou89 on 2017/2/26.
@@ -39,8 +41,8 @@ public class GossipLocationLoader extends BaseHttpLoader<Result> {
     }
 
     @Override
-    protected void onLoad(int pageNo, boolean more, ResponseCallBack callback, Object... inputs) {
-        OkHttpClientUtils.get("http://sugg.us.search.yahoo.net/gossip-gl-location/?appid=weather&output=json&command=%E5%B9%BF", null, callback);
+    protected Disposable onLoad(int pageNo, boolean more, ResponseCallBack callback, Object... inputs) {
+        return OkHttpClientUtils.get("http://sugg.us.search.yahoo.net/gossip-gl-location/?appid=weather&output=json&command=%E5%B9%BF", null, callback);
     }
 
     @Override

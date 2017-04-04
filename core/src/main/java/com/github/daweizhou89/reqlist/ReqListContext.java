@@ -10,7 +10,10 @@ import com.github.daweizhou89.reqlist.model.ListItem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+
+import io.reactivex.disposables.Disposable;
 
 /**
  * Created by zhoudawei on 2017/3/24.
@@ -36,6 +39,8 @@ public class ReqListContext {
     private ItemChangedRange mItemChangedRange = new ItemChangedRange();
     /**  */
     private ItemInserted mItemInserted = new ItemInserted();
+    /**  */
+    private LinkedList<Disposable> mDisposables = new LinkedList<>();
 
     private ReqListContext(Context context, BaseListAdapter adapter) {
         this.mContext = context;
@@ -128,6 +133,34 @@ public class ReqListContext {
         }
         mItemChangedRange.reset();
         mItemInserted.reset();
+    }
+
+    public void addDisposable(Disposable disposable) {
+        if (disposable == null) {
+            return;
+        }
+        if (!mDisposables.contains(disposable)) {
+            mDisposables.add(disposable);
+        }
+    }
+
+    public void removeDisposable(Disposable disposable) {
+        if (disposable == null) {
+            return;
+        }
+        if (!disposable.isDisposed()) {
+            disposable.dispose();
+        }
+        mDisposables.remove(disposable);
+    }
+
+    public void dispose() {
+        for (Disposable disposable : mDisposables) {
+            if (!disposable.isDisposed()) {
+                disposable.dispose();
+            }
+        }
+        mDisposables.clear();
     }
 
     /***
